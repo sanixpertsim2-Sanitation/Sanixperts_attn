@@ -13,9 +13,7 @@ export default function HandoverSection() {
     (report) => report.status === "Open"
   ).length;
   const [responses, setResponses] = useState({});
-  const pendingTasks = state.handoverTasks.filter(
-    (task) => task.status !== "completed"
-  );
+  const pendingTasks = state.handoverTasks;
 
   if (!state.stages.postClean || state.stages.handover) return null;
   if (state.handoverRequired === false) return null;
@@ -85,7 +83,7 @@ export default function HandoverSection() {
               </span>
             </div>
             <div className="mt-3 flex gap-3">
-              {["Yes", "No"].map((choice) => (
+              {["Verified", "Requires Reclean", "Findings"].map((choice) => (
                 <button
                   key={choice}
                   onClick={() =>
@@ -99,7 +97,11 @@ export default function HandoverSection() {
                   }
                   className={`rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] ${
                     responses[task.id]?.response === choice
-                      ? "border-emerald-400 bg-emerald-400/20 text-emerald-300"
+                      ? choice === "Verified"
+                        ? "border-emerald-400 bg-emerald-400/20 text-emerald-300"
+                        : choice === "Requires Reclean"
+                        ? "border-red-400 bg-red-400/20 text-red-200"
+                        : "border-amber-400 bg-amber-400/20 text-amber-200"
                       : "border-slate-600 text-slate-300"
                   }`}
                 >
@@ -119,10 +121,11 @@ export default function HandoverSection() {
                 }
               />
             </div>
-            {responses[task.id]?.response === "No" && (
+            {responses[task.id]?.response &&
+              responses[task.id]?.response !== "Verified" && (
               <textarea
                 className="mt-3 min-h-[80px] w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-sm text-slate-100"
-                placeholder="Describe the issue..."
+                placeholder="Describe the issue or reclean needed..."
                 value={responses[task.id]?.description || ""}
                 onChange={(event) =>
                   setResponses((prev) => ({
@@ -163,7 +166,10 @@ export default function HandoverSection() {
         onClick={() => {
           const updated = state.handoverTasks.map((task) => ({
             ...task,
-            status: responses[task.id]?.response === "Yes" ? "completed" : task.status,
+            status:
+              responses[task.id]?.response === "Verified"
+                ? "completed"
+                : "pending",
             response: responses[task.id]?.response || task.response || null,
             photo: responses[task.id]?.photo || task.photo || null,
             description:
@@ -178,7 +184,8 @@ export default function HandoverSection() {
           pendingTasks.some((task) => {
             const response = responses[task.id];
             if (!response?.response || !response.photo) return true;
-            if (response.response === "No" && !response.description) return true;
+            if (response.response !== "Verified" && !response.description)
+              return true;
             return false;
           })
         }

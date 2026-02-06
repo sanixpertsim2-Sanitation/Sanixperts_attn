@@ -7,10 +7,11 @@ import CameraCapture from "./CameraCapture";
 import LiveDateTime from "@/components/Layout/LiveDateTime";
 
 const questions = [
-  "Sanitation covers installed correctly",
-  "Equipment power isolated",
-  "Chemical supply confirmed",
-  "Floor drains cleared",
+  "Verify the equipment for any inadequate condition and safety issues.",
+  "Check sensors and motor.",
+  "Verify damage on all equipment, frame, conveyor, pipes, plugs, and emergency button.",
+  "Remove die, batter pump, transfer pipes, divider (if applicable), catchpans, and hopper unit.",
+  "Dry clean frame, conveyors (under & top), scrappers, and floor.",
 ];
 
 export default function PreClean() {

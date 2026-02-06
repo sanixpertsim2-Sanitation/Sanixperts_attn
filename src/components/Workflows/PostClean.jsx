@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import FaceIdGate from "./FaceIdGate";
@@ -34,10 +34,42 @@ export default function PostClean() {
   const openReportsCount = state.damageReports.filter(
     (report) => report.status === "Open"
   ).length;
+  const [responses, setResponses] = useState({});
 
   if (!state.stages.preClean || state.stages.postClean) {
     return null;
   }
+
+  const checklistQuestions = [
+    "Cover motors, sensors, air regulators, and electric panels.",
+    "Batter depositor frame is clean.",
+    "Mixers are clean.",
+    "Conveyors are cleaned and air dried (top and underneath).",
+    "Up tower is clean and guards are fixed.",
+    "Batter pump (A) and (B) are clean and fixed.",
+    "Transfer pipes (A) and (B) side pipe are clean and fixed.",
+    "Rubber pipes (A) and (B) pipe are clean and fixed.",
+    "Filters (A) and (B) side filter are clean and fixed.",
+    "Divider: both sides installed correctly.",
+    "Hopper: inside/outside, underneath gasket and die secure and clean.",
+    "Stirrer is clean.",
+    "Rotary valves are in position and die is fixed.",
+    "Depositor plate and gasket: plate and holes are clean.",
+    "Egg cooler: egg wash done and egg room clean and sanitized.",
+    "Floor is clean and dry.",
+    "No sanitation equipment is on the floor.",
+  ];
+
+  const checklistComplete = useMemo(
+    () =>
+      checklistQuestions.every((_, index) => {
+        const response = responses[index];
+        if (!response?.response) return false;
+        if (response.response === "Yes") return true;
+        return Boolean(response.photo && response.description);
+      }),
+    [responses, checklistQuestions]
+  );
 
   const handleSubmit = () => {
     const covered = Number(state.bagCounts.covered || 0);
@@ -49,7 +81,7 @@ export default function PostClean() {
       setShowMismatch(true);
       return;
     }
-    if (!verifiedUser) return;
+    if (!verifiedUser || !checklistComplete) return;
     if (openReportsCount > 0) return;
     if (handoverChoice === "yes" && !state.stages.handover) {
       setShowHandoverModal(true);
@@ -104,6 +136,66 @@ export default function PostClean() {
         </p>
       </div>
 
+      <div className="space-y-4">
+        {checklistQuestions.map((question, index) => (
+          <div
+            key={question}
+            className="rounded-2xl border border-slate-700/70 bg-slate-950/50 p-4"
+          >
+            <p className="text-sm font-semibold text-slate-200">{question}</p>
+            <div className="mt-3 flex gap-3">
+              {["Yes", "No", "N/A"].map((choice) => (
+                <button
+                  key={choice}
+                  onClick={() =>
+                    setResponses((prev) => ({
+                      ...prev,
+                      [index]: { ...prev[index], response: choice },
+                    }))
+                  }
+                  className={`rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] ${
+                    responses[index]?.response === choice
+                      ? "border-amber-400 bg-amber-400/20 text-amber-300"
+                      : "border-slate-600 text-slate-300"
+                  }`}
+                >
+                  {choice}
+                </button>
+              ))}
+            </div>
+            {responses[index]?.response &&
+              responses[index]?.response !== "Yes" && (
+                <div className="mt-4">
+                  <CameraCapture
+                    label="Photo Evidence (Camera Only)"
+                    required
+                    onCapture={(photo) =>
+                      setResponses((prev) => ({
+                        ...prev,
+                        [index]: { ...prev[index], photo },
+                      }))
+                    }
+                  />
+                  <textarea
+                    className="mt-3 min-h-[80px] w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-sm text-slate-100"
+                    placeholder="Describe the issue..."
+                    value={responses[index]?.description || ""}
+                    onChange={(event) =>
+                      setResponses((prev) => ({
+                        ...prev,
+                        [index]: {
+                          ...prev[index],
+                          description: event.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </div>
+              )}
+          </div>
+        ))}
+      </div>
+
       <CameraCapture
         label="Post-Clean Photo Evidence"
         required
@@ -136,7 +228,7 @@ export default function PostClean() {
         </div>
       </div>
 
-      {bagsRetrieved && photo && handoverChoice ? (
+      {bagsRetrieved && photo && handoverChoice && checklistComplete ? (
         <button
           onClick={handleSubmit}
           disabled={openReportsCount > 0}

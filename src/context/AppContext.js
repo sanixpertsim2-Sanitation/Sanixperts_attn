@@ -33,22 +33,87 @@ const defaultState = {
   handoverTasks: [
     {
       id: "task-1",
-      text: "Verify all lines and conveyors are clean to sanitation standard.",
+      text: "Cover motors, sensors, air regulators, and electric panels.",
       status: "pending",
     },
     {
       id: "task-2",
-      text: "Inspect all coverings and confirm every cover is removed.",
+      text: "Batter depositor frame is clean.",
       status: "pending",
     },
     {
       id: "task-3",
-      text: "Verify drain strainers near the line are clean and clear.",
+      text: "Mixers are clean.",
       status: "pending",
     },
     {
       id: "task-4",
-      text: "Verify housekeeping and garbage removal is completed for the line.",
+      text: "Conveyors are cleaned and air dried (top and underneath).",
+      status: "pending",
+    },
+    {
+      id: "task-5",
+      text: "Up tower is clean and guards are fixed.",
+      status: "pending",
+    },
+    {
+      id: "task-6",
+      text: "Batter pump (A) and (B) are clean and fixed.",
+      status: "pending",
+    },
+    {
+      id: "task-7",
+      text: "Transfer pipes (A) and (B) side pipe are clean and fixed.",
+      status: "pending",
+    },
+    {
+      id: "task-8",
+      text: "Rubber pipes (A) and (B) pipe are clean and fixed.",
+      status: "pending",
+    },
+    {
+      id: "task-9",
+      text: "Filters (A) and (B) side filter are clean and fixed.",
+      status: "pending",
+    },
+    {
+      id: "task-10",
+      text: "Divider: both sides installed correctly.",
+      status: "pending",
+    },
+    {
+      id: "task-11",
+      text: "Hopper: inside/outside, underneath gasket and die secure and clean.",
+      status: "pending",
+    },
+    {
+      id: "task-12",
+      text: "Stirrer is clean.",
+      status: "pending",
+    },
+    {
+      id: "task-13",
+      text: "Rotary valves are in position and die is fixed.",
+      status: "pending",
+    },
+    {
+      id: "task-14",
+      text: "Depositor plate and gasket: plate and holes are clean.",
+      status: "pending",
+    },
+    {
+      id: "task-15",
+      text: "Egg cooler: egg wash done and egg room clean and sanitized.",
+      status: "pending",
+    },
+    {
+      id: "task-16",
+      text: "Floor is clean and dry.",
+      status: "pending",
+    },
+    {
+      id: "task-17",
+      text: "No sanitation equipment is on the floor.",
       status: "pending",
     },
   ],
