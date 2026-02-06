@@ -151,8 +151,8 @@ export default function PreClean() {
       </button>
 
       {showAck && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-3xl bg-slate-950/80 p-6">
-          <div className="max-w-xl space-y-4 rounded-2xl border border-amber-400/40 bg-slate-900 p-6 text-sm text-slate-200 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-6">
+          <div className="max-h-[85vh] w-full max-w-xl space-y-4 overflow-y-auto rounded-2xl border border-amber-400/40 bg-slate-900 p-6 text-sm text-slate-200 shadow-xl">
             <h3 className="text-lg font-semibold text-amber-200">
               Pre-Clean Acknowledgement
             </h3>
