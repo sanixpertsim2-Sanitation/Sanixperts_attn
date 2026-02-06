@@ -263,7 +263,7 @@ export default function PostClean() {
                     isFinding: true,
                   }))
                   .filter((item) => item.text);
-                updateHandoverTasks([...updated, ...noteItems]);
+                updateHandoverTasks([...updated, ...noteItems], true);
                 completePostClean({
                   bagsRetrieved,
                   name: state.currentUser?.name || "Unknown",

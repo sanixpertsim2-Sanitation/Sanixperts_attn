@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import CameraCapture from "./CameraCapture";
+import { useApp } from "@/context/AppContext";
 
 const tasks = [
   "Verify all lines and conveyors are clean to sanitation standard.",
@@ -12,6 +13,7 @@ const tasks = [
 
 export default function LeadVerificationChecklist({ onComplete }) {
   const [responses, setResponses] = useState({});
+  const { setLeadChecklist } = useApp();
 
   const ready = useMemo(
     () =>
@@ -90,7 +92,17 @@ export default function LeadVerificationChecklist({ onComplete }) {
       </div>
 
       <button
-        onClick={onComplete}
+        onClick={() => {
+          setLeadChecklist(
+            tasks.map((task, idx) => ({
+              task,
+              response: responses[idx]?.choice || null,
+              description: responses[idx]?.description || "",
+              photo: responses[idx]?.photo || null,
+            }))
+          );
+          onComplete();
+        }}
         disabled={!ready}
         className="w-full rounded-2xl bg-indigo-500 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white transition hover:bg-indigo-400"
       >

@@ -36,10 +36,6 @@ export default function HandoverSection() {
     setNewFinding("");
   };
 
-  const allComplete = state.handoverTasks.every(
-    (task) => task.status === "completed"
-  );
-
   const handleSubmit = () => {
     const name = state.currentUser?.name || "Unknown";
     completeHandover({ name });
@@ -174,7 +170,7 @@ export default function HandoverSection() {
               responses[task.id]?.description || task.description || "",
             timestamp: new Date().toISOString(),
           }));
-          updateHandoverTasks(updated);
+          updateHandoverTasks(updated, true);
           handleSubmit();
         }}
         disabled={

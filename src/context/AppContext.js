@@ -22,6 +22,7 @@ const defaultState = {
     preCleanBy: null,
     postCleanBy: null,
   },
+  leadChecklist: [],
   stageTimes: {
     preCleanAt: null,
     postCleanAt: null,
@@ -115,7 +116,51 @@ export function AppProvider({ children }) {
         })),
       }));
     };
+    const loadHandoverTasks = async () => {
+      const { data, error } = await supabase
+        .from("handover_tasks")
+        .select("*")
+        .eq("line_name", "MACY Production")
+        .order("created_at", { ascending: true });
+      if (error || !data) return;
+      setState((prev) => ({
+        ...prev,
+        handoverTasks: data.map((task) => ({
+          id: task.id,
+          text: task.task_text,
+          response: task.response,
+          description: task.description,
+          photo: task.photo_data
+            ? { dataUrl: task.photo_data, timestamp: task.created_at }
+            : null,
+          status: task.status,
+          createdAt: task.created_at,
+        })),
+      }));
+    };
+    const loadLineStatus = async () => {
+      const { data, error } = await supabase
+        .from("line_status")
+        .select("*")
+        .eq("line_name", "MACY Production")
+        .order("updated_at", { ascending: false })
+        .limit(1);
+      if (error || !data?.[0]) return;
+      setState((prev) => ({
+        ...prev,
+        lineStatus: {
+          ...prev.lineStatus,
+          macy: {
+            stage: data[0].status,
+            submittedBy: data[0].updated_by || "-",
+            timestamp: data[0].updated_at,
+          },
+        },
+      }));
+    };
     loadDamageReports();
+    loadHandoverTasks();
+    loadLineStatus();
   }, []);
 
   const registerEmployee = ({ name, role, faceId }) => {
@@ -138,6 +183,25 @@ export function AppProvider({ children }) {
 
   const completePreClean = ({ bagsCovered, name }) => {
     const now = new Date().toISOString();
+    if (supabase) {
+      supabase.from("pre_cleaning_logs").insert([
+        {
+          line_name: "MACY Production",
+          employee_name: name,
+          bags_covered: Number(bagsCovered || 0),
+          checklist: { bagsCovered, submittedBy: name },
+          submitted_at: now,
+        },
+      ]);
+      supabase.from("line_status").upsert([
+        {
+          line_name: "MACY Production",
+          status: "Pre-clean complete",
+          updated_by: name,
+          updated_at: now,
+        },
+      ]);
+    }
     logEvent("pre_clean_submitted", {
       lineName: "MACY Production",
       bagsCovered,
@@ -171,6 +235,26 @@ export function AppProvider({ children }) {
 
   const completePostClean = ({ bagsRetrieved, name }) => {
     const now = new Date().toISOString();
+    if (supabase) {
+      supabase.from("post_cleaning_logs").insert([
+        {
+          line_name: "MACY Production",
+          employee_name: name,
+          bags_retrieved: Number(bagsRetrieved || 0),
+          photo_data: "",
+          handover_required: Boolean(state.handoverRequired),
+          submitted_at: now,
+        },
+      ]);
+      supabase.from("line_status").upsert([
+        {
+          line_name: "MACY Production",
+          status: "Post-clean complete",
+          updated_by: name,
+          updated_at: now,
+        },
+      ]);
+    }
     logEvent("post_clean_submitted", {
       lineName: "MACY Production",
       bagsRetrieved,
@@ -216,12 +300,50 @@ export function AppProvider({ children }) {
     }));
   };
 
-  const updateHandoverTasks = (tasks) => {
+  const updateHandoverTasks = (tasks, persist = false) => {
+    if (supabase && persist) {
+      supabase
+        .from("handover_tasks")
+        .delete()
+        .eq("line_name", "MACY Production")
+        .then(() =>
+          supabase.from("handover_tasks").insert(
+            tasks.map((task) => ({
+              line_name: "MACY Production",
+              task_text: task.text,
+              response: task.response || null,
+              description: task.description || null,
+              photo_data: task.photo?.dataUrl || null,
+              status: task.status || "pending",
+              created_at: new Date().toISOString(),
+            }))
+          )
+        );
+    }
     setState((prev) => ({ ...prev, handoverTasks: tasks }));
   };
 
   const completeHandover = ({ name }) => {
     const now = new Date().toISOString();
+    if (supabase) {
+      supabase.from("handover_logs").insert([
+        {
+          line_name: "MACY Production",
+          employee_name: name,
+          reason: "",
+          notes: { submittedBy: name },
+          submitted_at: now,
+        },
+      ]);
+      supabase.from("line_status").upsert([
+        {
+          line_name: "MACY Production",
+          status: "Handover complete",
+          updated_by: name,
+          updated_at: now,
+        },
+      ]);
+    }
     logEvent("handover_submitted", {
       lineName: "MACY Production",
       submittedBy: name,
@@ -252,6 +374,25 @@ export function AppProvider({ children }) {
 
   const completeLeadSignoff = ({ name, signature }) => {
     const now = new Date().toISOString();
+    if (supabase) {
+      supabase.from("area_verification_logs").insert([
+        {
+          line_name: "MACY Production",
+          lead_name: name,
+          checklist: state.leadChecklist,
+          signature_data: signature,
+          submitted_at: now,
+        },
+      ]);
+      supabase.from("line_status").upsert([
+        {
+          line_name: "MACY Production",
+          status: "Line released for production",
+          updated_by: name,
+          updated_at: now,
+        },
+      ]);
+    }
     logEvent("lead_released", {
       lineName: "MACY Production",
       leadName: name,
@@ -352,6 +493,10 @@ export function AppProvider({ children }) {
     }));
   };
 
+  const setLeadChecklist = (items) => {
+    setState((prev) => ({ ...prev, leadChecklist: items }));
+  };
+
   const value = useMemo(
     () => ({
       state,
@@ -367,6 +512,7 @@ export function AppProvider({ children }) {
       addDamageReport,
       updateDamageReport,
       resetStages,
+      setLeadChecklist,
     }),
     [state]
   );
