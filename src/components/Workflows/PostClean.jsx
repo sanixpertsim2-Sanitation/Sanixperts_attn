@@ -39,10 +39,6 @@ export default function PostClean({
   ).length;
   const [responses, setResponses] = useState({});
 
-  if (!state.stages.preClean || state.stages.postClean) {
-    return null;
-  }
-
   const defaultQuestions = [
     "Cover motors, sensors, air regulators, and electric panels.",
     "Batter depositor frame is clean.",
@@ -74,6 +70,10 @@ export default function PostClean({
       }),
     [responses, checklistQuestions]
   );
+
+  if (!state.stages.preClean || state.stages.postClean) {
+    return null;
+  }
 
   const handleSubmit = () => {
     const covered = Number(state.bagCounts.covered || 0);
