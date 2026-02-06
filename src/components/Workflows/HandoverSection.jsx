@@ -6,7 +6,7 @@ import LiveDateTime from "@/components/Layout/LiveDateTime";
 import DamageAcknowledgement from "./DamageAcknowledgement";
 import CameraCapture from "./CameraCapture";
 
-export default function HandoverSection() {
+export default function HandoverSection({ lineName = "MACY Production" }) {
   const { state, updateHandoverTasks, completeHandover } = useApp();
   const [newFinding, setNewFinding] = useState("");
   const openReportsCount = state.damageReports.filter(
@@ -36,7 +36,7 @@ export default function HandoverSection() {
 
   const handleSubmit = () => {
     const name = state.currentUser?.name || "Unknown";
-    completeHandover({ name });
+    completeHandover({ name, lineName });
   };
 
   return (
@@ -53,7 +53,7 @@ export default function HandoverSection() {
         </p>
       </div>
 
-      <DamageAcknowledgement lineName="MACY Production" />
+      <DamageAcknowledgement lineName={lineName} />
 
       <div className="space-y-4">
         {pendingTasks.length === 0 && (

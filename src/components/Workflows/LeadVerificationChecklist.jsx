@@ -4,26 +4,27 @@ import { useMemo, useState } from "react";
 import CameraCapture from "./CameraCapture";
 import { useApp } from "@/context/AppContext";
 
-const tasks = [
+const defaultTasks = [
   "Verify all lines and conveyors are clean to sanitation standard.",
   "Inspect all coverings and confirm every cover is removed.",
   "Verify drain strainers near the line are clean and clear.",
   "Verify housekeeping and garbage removal is completed for the line.",
 ];
 
-export default function LeadVerificationChecklist({ onComplete }) {
+export default function LeadVerificationChecklist({ onComplete, tasks = [] }) {
   const [responses, setResponses] = useState({});
   const { setLeadChecklist } = useApp();
+  const activeTasks = tasks.length > 0 ? tasks : defaultTasks;
 
   const ready = useMemo(
     () =>
-      tasks.every((_, idx) => {
+      activeTasks.every((_, idx) => {
         const response = responses[idx];
         if (!response?.choice || !response.photo) return false;
         if (response.choice === "No" && !response.description) return false;
         return true;
       }),
-    [responses]
+    [responses, activeTasks]
   );
 
   return (
@@ -36,7 +37,7 @@ export default function LeadVerificationChecklist({ onComplete }) {
       </p>
 
       <div className="space-y-4">
-        {tasks.map((task, idx) => (
+        {activeTasks.map((task, idx) => (
           <div
             key={task}
             className="rounded-2xl border border-slate-700/70 bg-slate-950/60 p-4"
@@ -94,7 +95,7 @@ export default function LeadVerificationChecklist({ onComplete }) {
       <button
         onClick={() => {
           setLeadChecklist(
-            tasks.map((task, idx) => ({
+            activeTasks.map((task, idx) => ({
               task,
               response: responses[idx]?.choice || null,
               description: responses[idx]?.description || "",

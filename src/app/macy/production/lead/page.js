@@ -22,7 +22,7 @@ export default function LeadVerificationPage() {
         />
       )}
 
-      {leadChecklistDone && <AreaLeadSignOff />}
+      {leadChecklistDone && <AreaLeadSignOff lineName="MACY Production" />}
     </div>
   );
 }

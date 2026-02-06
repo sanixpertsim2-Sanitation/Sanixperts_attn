@@ -6,7 +6,7 @@ import FaceIdGate from "./FaceIdGate";
 import CameraCapture from "./CameraCapture";
 import LiveDateTime from "@/components/Layout/LiveDateTime";
 
-const questions = [
+const defaultQuestions = [
   "Verify the equipment for any inadequate condition and safety issues.",
   "Check sensors and motor.",
   "Verify damage on all equipment, frame, conveyor, pipes, plugs, and emergency button.",
@@ -14,25 +14,30 @@ const questions = [
   "Dry clean frame, conveyors (under & top), scrappers, and floor.",
 ];
 
-export default function PreClean() {
+export default function PreClean({
+  title = "Stage 1: Pre-Cleaning",
+  questions = [],
+  lineName = "MACY Production",
+}) {
   const { state, completePreClean, markStageInProgress } = useApp();
   const [verifiedUser, setVerifiedUser] = useState(state.currentUser);
   const [bagsCovered, setBagsCovered] = useState(state.bagCounts.covered);
   const [responses, setResponses] = useState({});
   const [showAck, setShowAck] = useState(true);
   const [ackChecked, setAckChecked] = useState(false);
+  const activeQuestions = questions.length > 0 ? questions : defaultQuestions;
 
   const readyToSubmit = useMemo(() => {
     const allAnswered =
-      questions.length > 0 &&
-      questions.every((_, index) => {
+      activeQuestions.length > 0 &&
+      activeQuestions.every((_, index) => {
         const response = responses[index];
         if (!response?.response) return false;
         if (response.response === "Yes") return true;
         return Boolean(response.photo && response.description);
       });
     return Boolean(verifiedUser && bagsCovered && allAnswered && !showAck);
-  }, [verifiedUser, bagsCovered, responses, showAck]);
+  }, [verifiedUser, bagsCovered, responses, showAck, activeQuestions]);
 
   const handleResponse = (index, response) => {
     setResponses((prev) => ({
@@ -57,7 +62,7 @@ export default function PreClean() {
 
   const handleSubmit = () => {
     if (!verifiedUser) return;
-    completePreClean({ bagsCovered, name: verifiedUser.name });
+    completePreClean({ bagsCovered, name: verifiedUser.name, lineName });
   };
 
   if (state.stages.preClean) {
@@ -68,9 +73,7 @@ export default function PreClean() {
     <section className="relative space-y-6 rounded-3xl border border-blue-500/30 bg-slate-900/60 p-6 shadow-xl">
       <div>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-xl font-semibold text-blue-200">
-            Stage 1: Pre-Cleaning
-          </h2>
+          <h2 className="text-xl font-semibold text-blue-200">{title}</h2>
           <LiveDateTime />
         </div>
         <p className="text-xs text-slate-400">
@@ -100,7 +103,7 @@ export default function PreClean() {
       </div>
 
       <div className="space-y-4">
-        {questions.map((question, index) => (
+        {activeQuestions.map((question, index) => (
           <div
             key={question}
             className="rounded-2xl border border-slate-700/70 bg-slate-950/50 p-4"

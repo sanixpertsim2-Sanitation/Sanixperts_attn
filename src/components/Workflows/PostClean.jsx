@@ -8,7 +8,10 @@ import CameraCapture from "./CameraCapture";
 import LiveDateTime from "@/components/Layout/LiveDateTime";
 import DamageAcknowledgement from "./DamageAcknowledgement";
 
-export default function PostClean() {
+export default function PostClean({
+  questions = [],
+  lineName = "MACY Production",
+}) {
   const {
     state,
     completePostClean,
@@ -40,7 +43,7 @@ export default function PostClean() {
     return null;
   }
 
-  const checklistQuestions = [
+  const defaultQuestions = [
     "Cover motors, sensors, air regulators, and electric panels.",
     "Batter depositor frame is clean.",
     "Mixers are clean.",
@@ -59,6 +62,7 @@ export default function PostClean() {
     "Floor is clean and dry.",
     "No sanitation equipment is on the floor.",
   ];
+  const checklistQuestions = questions.length > 0 ? questions : defaultQuestions;
 
   const checklistComplete = useMemo(
     () =>
@@ -87,7 +91,7 @@ export default function PostClean() {
       setShowHandoverModal(true);
       return;
     }
-    completePostClean({ bagsRetrieved, name: verifiedUser.name });
+    completePostClean({ bagsRetrieved, name: verifiedUser.name, lineName });
   };
 
   const handleHandover = (value) => {
@@ -202,7 +206,7 @@ export default function PostClean() {
         onCapture={setPhoto}
       />
 
-      <DamageAcknowledgement lineName="MACY Production" />
+      <DamageAcknowledgement lineName={lineName} />
 
       <div className="rounded-2xl border border-slate-700/70 bg-slate-950/60 p-4">
         <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
@@ -359,9 +363,14 @@ export default function PostClean() {
                 completePostClean({
                   bagsRetrieved,
                   name: state.currentUser?.name || "Unknown",
+                  lineName,
                 });
                 setShowHandoverModal(false);
-                router.push("/macy/production/handover");
+                if (lineName === "MACY Decoration") {
+                  router.push("/macy/decoration/handover");
+                } else {
+                  router.push("/macy/production/handover");
+                }
               }}
               disabled={openReportsCount > 0}
               className="w-full rounded-2xl bg-amber-400 py-3 text-sm font-bold uppercase tracking-[0.2em] text-slate-900"

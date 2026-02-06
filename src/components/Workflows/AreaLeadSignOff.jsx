@@ -8,7 +8,7 @@ import LiveDateTime from "@/components/Layout/LiveDateTime";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-export default function AreaLeadSignOff() {
+export default function AreaLeadSignOff({ lineName = "MACY Production" }) {
   const { state, completeLeadSignoff } = useApp();
   const sigRef = useRef(null);
   const [verifiedLead, setVerifiedLead] = useState(null);
@@ -130,7 +130,7 @@ export default function AreaLeadSignOff() {
     }
     const signature = sigRef.current.getTrimmedCanvas().toDataURL("image/png");
     generateReport(verifiedLead.name, signature);
-    completeLeadSignoff({ name: verifiedLead.name, signature });
+    completeLeadSignoff({ name: verifiedLead.name, signature, lineName });
   };
 
   return (

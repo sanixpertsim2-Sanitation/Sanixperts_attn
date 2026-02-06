@@ -246,12 +246,12 @@ export function AppProvider({ children }) {
     }));
   };
 
-  const completePreClean = ({ bagsCovered, name }) => {
+  const completePreClean = ({ bagsCovered, name, lineName = "MACY Production" }) => {
     const now = new Date().toISOString();
     if (supabase) {
       supabase.from("pre_cleaning_logs").insert([
         {
-          line_name: "MACY Production",
+          line_name: lineName,
           employee_name: name,
           bags_covered: Number(bagsCovered || 0),
           checklist: { bagsCovered, submittedBy: name },
@@ -260,7 +260,7 @@ export function AppProvider({ children }) {
       ]);
       supabase.from("line_status").upsert([
         {
-          line_name: "MACY Production",
+          line_name: lineName,
           status: "Pre-clean complete",
           updated_by: name,
           updated_at: now,
@@ -268,7 +268,7 @@ export function AppProvider({ children }) {
       ]);
     }
     logEvent("pre_clean_submitted", {
-      lineName: "MACY Production",
+      lineName,
       bagsCovered,
       submittedBy: name,
       timestamp: now,
@@ -298,12 +298,12 @@ export function AppProvider({ children }) {
     }));
   };
 
-  const completePostClean = ({ bagsRetrieved, name }) => {
+  const completePostClean = ({ bagsRetrieved, name, lineName = "MACY Production" }) => {
     const now = new Date().toISOString();
     if (supabase) {
       supabase.from("post_cleaning_logs").insert([
         {
-          line_name: "MACY Production",
+          line_name: lineName,
           employee_name: name,
           bags_retrieved: Number(bagsRetrieved || 0),
           photo_data: "",
@@ -313,7 +313,7 @@ export function AppProvider({ children }) {
       ]);
       supabase.from("line_status").upsert([
         {
-          line_name: "MACY Production",
+          line_name: lineName,
           status: "Post-clean complete",
           updated_by: name,
           updated_at: now,
@@ -321,7 +321,7 @@ export function AppProvider({ children }) {
       ]);
     }
     logEvent("post_clean_submitted", {
-      lineName: "MACY Production",
+      lineName,
       bagsRetrieved,
       submittedBy: name,
       timestamp: now,
@@ -388,12 +388,12 @@ export function AppProvider({ children }) {
     setState((prev) => ({ ...prev, handoverTasks: tasks }));
   };
 
-  const completeHandover = ({ name }) => {
+  const completeHandover = ({ name, lineName = "MACY Production" }) => {
     const now = new Date().toISOString();
     if (supabase) {
       supabase.from("handover_logs").insert([
         {
-          line_name: "MACY Production",
+          line_name: lineName,
           employee_name: name,
           reason: "",
           notes: { submittedBy: name },
@@ -402,7 +402,7 @@ export function AppProvider({ children }) {
       ]);
       supabase.from("line_status").upsert([
         {
-          line_name: "MACY Production",
+          line_name: lineName,
           status: "Handover complete",
           updated_by: name,
           updated_at: now,
@@ -410,7 +410,7 @@ export function AppProvider({ children }) {
       ]);
     }
     logEvent("handover_submitted", {
-      lineName: "MACY Production",
+      lineName,
       submittedBy: name,
       timestamp: now,
     });
@@ -437,12 +437,16 @@ export function AppProvider({ children }) {
     }));
   };
 
-  const completeLeadSignoff = ({ name, signature }) => {
+  const completeLeadSignoff = ({
+    name,
+    signature,
+    lineName = "MACY Production",
+  }) => {
     const now = new Date().toISOString();
     if (supabase) {
       supabase.from("area_verification_logs").insert([
         {
-          line_name: "MACY Production",
+          line_name: lineName,
           lead_name: name,
           checklist: state.leadChecklist,
           signature_data: signature,
@@ -451,7 +455,7 @@ export function AppProvider({ children }) {
       ]);
       supabase.from("line_status").upsert([
         {
-          line_name: "MACY Production",
+          line_name: lineName,
           status: "Line released for production",
           updated_by: name,
           updated_at: now,
@@ -459,7 +463,7 @@ export function AppProvider({ children }) {
       ]);
     }
     logEvent("lead_released", {
-      lineName: "MACY Production",
+      lineName,
       leadName: name,
       timestamp: now,
     });

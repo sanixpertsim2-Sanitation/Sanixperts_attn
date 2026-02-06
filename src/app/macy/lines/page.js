@@ -6,7 +6,7 @@ import { useApp } from "@/context/AppContext";
 
 const lines = [
   { id: "production", label: "Production", active: true },
-  { id: "decoration", label: "Decoration", active: false },
+  { id: "decoration", label: "Decoration", active: true },
   { id: "packaging", label: "Packaging", active: false },
 ];
 
