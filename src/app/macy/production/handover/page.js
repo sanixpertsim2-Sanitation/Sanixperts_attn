@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import HandoverSection from "@/components/Workflows/HandoverSection";
 import Link from "next/link";
@@ -8,6 +8,12 @@ import Link from "next/link";
 export default function HandoverPage() {
   const { state } = useApp();
   const [showChecklist, setShowChecklist] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -29,7 +35,9 @@ export default function HandoverPage() {
         </div>
       )}
 
-      {showChecklist && !state.stages.handover && <HandoverSection />}
+      {showChecklist && !state.stages.handover && (
+        <HandoverSection redirectTo="/macy/production/checklist" />
+      )}
 
       {state.stages.handover && (
         <div className="flex flex-col items-center justify-center gap-4 rounded-3xl border border-indigo-400/40 bg-indigo-500/10 p-10 text-center">

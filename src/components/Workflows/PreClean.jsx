@@ -18,6 +18,7 @@ export default function PreClean({
   title = "Stage 1: Pre-Cleaning",
   questions = [],
   lineName = "MACY Production",
+  sectionId = "pre-clean-stage",
 }) {
   const { state, completePreClean, markStageInProgress } = useApp();
   const [verifiedUser, setVerifiedUser] = useState(state.currentUser);
@@ -63,6 +64,9 @@ export default function PreClean({
   const handleSubmit = () => {
     if (!verifiedUser) return;
     completePreClean({ bagsCovered, name: verifiedUser.name, lineName });
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   if (state.stages.preClean) {
@@ -70,7 +74,10 @@ export default function PreClean({
   }
 
   return (
-    <section className="relative space-y-6 rounded-3xl border border-blue-500/30 bg-slate-900/60 p-6 shadow-xl">
+    <section
+      id={sectionId}
+      className="relative space-y-6 rounded-3xl border border-blue-500/30 bg-slate-900/60 p-6 shadow-xl"
+    >
       <div>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-xl font-semibold text-blue-200">{title}</h2>

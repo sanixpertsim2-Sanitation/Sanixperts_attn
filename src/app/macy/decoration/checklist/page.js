@@ -62,11 +62,13 @@ export default function MacyDecorationChecklistPage() {
         title="Stage 1: Pre-Cleaning (Decoration)"
         questions={preCleanQuestions}
         lineName="MACY Decoration"
+        sectionId="pre-clean-stage"
       />
 
       <PostClean
         questions={postCleanQuestions}
         lineName="MACY Decoration"
+        sectionId="post-clean-stage"
       />
 
       <HandoverSection lineName="MACY Decoration" />

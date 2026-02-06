@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AreaLeadSignOff from "@/components/Workflows/AreaLeadSignOff";
 import LeadVerificationChecklist from "@/components/Workflows/LeadVerificationChecklist";
 import DamageAcknowledgement from "@/components/Workflows/DamageAcknowledgement";
@@ -27,6 +27,12 @@ const leadQuestions = [
 
 export default function DecorationLeadVerificationPage() {
   const [leadChecklistDone, setLeadChecklistDone] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, []);
 
   return (
     <div className="space-y-6">

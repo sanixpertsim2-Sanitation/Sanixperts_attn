@@ -13,15 +13,20 @@ const defaultTasks = [
 
 export default function LeadVerificationChecklist({ onComplete, tasks = [] }) {
   const [responses, setResponses] = useState({});
-  const { setLeadChecklist } = useApp();
-  const activeTasks = tasks.length > 0 ? tasks : defaultTasks;
+  const { setLeadChecklist, state } = useApp();
+  const handoverTasks =
+    state.handoverRequired && state.handoverTasks.length > 0
+      ? state.handoverTasks.map((task) => task.text)
+      : [];
+  const activeTasks =
+    tasks.length > 0 ? tasks : handoverTasks.length > 0 ? handoverTasks : defaultTasks;
 
   const ready = useMemo(
     () =>
       activeTasks.every((_, idx) => {
         const response = responses[idx];
         if (!response?.choice || !response.photo) return false;
-        if (response.choice === "No" && !response.description) return false;
+        if (response.choice !== "Yes" && !response.description) return false;
         return true;
       }),
     [responses, activeTasks]
@@ -33,7 +38,8 @@ export default function LeadVerificationChecklist({ onComplete, tasks = [] }) {
         Stage 5: Lead Verification Checklist
       </h2>
       <p className="text-xs text-slate-400">
-        Each item requires a camera verification. If No, add a description.
+        Each item requires a camera verification. Description required for No
+        or N/A responses.
       </p>
 
       <div className="space-y-4">
@@ -44,7 +50,7 @@ export default function LeadVerificationChecklist({ onComplete, tasks = [] }) {
           >
             <p className="text-sm font-semibold text-slate-100">{task}</p>
             <div className="mt-3 flex gap-3">
-              {["Yes", "No"].map((choice) => (
+              {["Yes", "No", "N/A"].map((choice) => (
                 <button
                   key={choice}
                   onClick={() =>
@@ -63,7 +69,7 @@ export default function LeadVerificationChecklist({ onComplete, tasks = [] }) {
                 </button>
               ))}
             </div>
-            <div className="mt-4">
+            <div className="mt-4 space-y-3">
               <CameraCapture
                 label="Verification Photo (Camera Only)"
                 required
@@ -74,11 +80,13 @@ export default function LeadVerificationChecklist({ onComplete, tasks = [] }) {
                   }))
                 }
               />
-            </div>
-            {responses[idx]?.choice === "No" && (
               <textarea
-                className="mt-3 min-h-[80px] w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-sm text-slate-100"
-                placeholder="Describe the issue..."
+                className="min-h-[80px] w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-sm text-slate-100"
+                placeholder={
+                  responses[idx]?.choice === "Yes"
+                    ? "Notes (optional)..."
+                    : "Describe the issue..."
+                }
                 value={responses[idx]?.description || ""}
                 onChange={(event) =>
                   setResponses((prev) => ({
@@ -87,7 +95,7 @@ export default function LeadVerificationChecklist({ onComplete, tasks = [] }) {
                   }))
                 }
               />
-            )}
+            </div>
           </div>
         ))}
       </div>

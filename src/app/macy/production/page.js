@@ -24,8 +24,8 @@ export default function MacyProductionPage() {
 
   const cards = [
     {
-      title: "Cleaning Checklist",
-      description: checklistStatus,
+      title: "Cleaning Stages",
+      description: `Pre-clean, post-clean, handover, and area verification • ${checklistStatus}`,
       href: "/macy/production/checklist",
       highlight: checklistPulse,
     },
