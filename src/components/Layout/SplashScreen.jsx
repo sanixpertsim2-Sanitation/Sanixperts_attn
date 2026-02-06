@@ -45,13 +45,15 @@ export default function SplashScreen() {
       <video
         ref={videoRef}
         className="h-full w-full object-cover"
-        src="/assets/logo.mp4"
         autoPlay
         muted
         playsInline
         onEnded={closeSplash}
         onCanPlay={() => setReady(true)}
-      />
+      >
+        <source src="/assets/intro.webm" type="video/webm" />
+        <source src="/assets/intro.mp4" type="video/mp4" />
+      </video>
       <div className="absolute inset-0 flex items-end justify-between p-6">
         <button
           onClick={closeSplash}

@@ -94,3 +94,12 @@ create table if not exists event_logs (
   payload jsonb not null,
   created_at timestamptz default now()
 );
+
+create table if not exists cleaning_logs (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now() not null,
+  task_name text not null,
+  cleaner_name text,
+  image_url text,
+  is_completed boolean default false
+);

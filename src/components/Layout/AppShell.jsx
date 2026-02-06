@@ -9,6 +9,7 @@ import SplashScreen from "./SplashScreen";
 const navLinks = [
   { href: "/", label: "Launcher" },
   { href: "/macy/lines", label: "Lines" },
+  { href: "/cleaning-log", label: "Cleaning Log" },
   { href: "/dashboard", label: "Dashboard" },
   { href: "/help", label: "Help" },
 ];
