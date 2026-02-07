@@ -30,6 +30,16 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#05070c" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+  var link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "/styles/safari.css";
+  document.head.appendChild(link);
+}`,
+          }}
+        />
       </head>
       <body
         suppressHydrationWarning

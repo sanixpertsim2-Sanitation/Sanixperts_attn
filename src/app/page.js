@@ -31,7 +31,7 @@ export default function Home() {
     <div className="space-y-8">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold text-blue-200">
-          Sanixpert Digital Sanitation Checklist
+          Digital Sanitation Checklist
         </h1>
         <p className="text-sm text-slate-400">
           Select a production line to begin. Only MACY is currently active.

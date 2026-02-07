@@ -1,0 +1,25 @@
+/* Safari-only fixes */
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+* {
+  min-width: 0;
+}
+
+body {
+  -webkit-overflow-scrolling: touch;
+}
+
+img,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .bottom-nav {
+    transform: translateZ(0);
+  }
+}
