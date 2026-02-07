@@ -1,6 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
+import MobileCompatibilityProvider from "../components/MobileCompatibilityProvider";
+import UniversalMobileLayout from "../components/UniversalMobileLayout";
+import UniversalBottomNav from "../components/UniversalBottomNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +33,11 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#05070c" />
+        
+        {/* Universal mobile compatibility CSS */}
+        <link rel="stylesheet" href="/styles/mobile-universal.css" />
+        
+        {/* Safari-specific CSS */}
         <script
           dangerouslySetInnerHTML={{
             __html: `if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
@@ -45,7 +53,14 @@ export default function RootLayout({ children }) {
         suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <MobileCompatibilityProvider>
+            <UniversalMobileLayout>
+              {children}
+              <UniversalBottomNav />
+            </UniversalMobileLayout>
+          </MobileCompatibilityProvider>
+        </Providers>
       </body>
     </html>
   );
