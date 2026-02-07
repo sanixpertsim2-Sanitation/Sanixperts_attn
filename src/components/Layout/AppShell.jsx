@@ -5,7 +5,6 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import LiveDateTime from "./LiveDateTime";
 import SplashScreen from "./SplashScreen";
-import HeroSection from "@/components/Hero";
 
 const navLinks = [
   { href: "/", label: "Launcher" },
@@ -58,11 +57,7 @@ export default function AppShell({ children }) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl px-6 py-10">
-        <HeroSection />
-        {children}
-        <HeroSection />
-      </main>
+      <main className="mx-auto w-full max-w-6xl px-6 py-10">{children}</main>
 
       <footer className="border-t border-slate-800/70 py-6 text-center text-xs text-slate-400">
         Sanixpert Digital Sanitation Checklist • Give & Go Facility
