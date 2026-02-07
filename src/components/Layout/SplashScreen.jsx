@@ -11,6 +11,7 @@ const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
 export default function SplashScreen() {
   const [visible, setVisible] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
   const canvasRef = useRef(null);
   const rafRef = useRef(null);
   const redirectTimeoutRef = useRef(null);
@@ -23,6 +24,7 @@ export default function SplashScreen() {
     }
     return { isMobile: window.innerWidth < 768 };
   }, []);
+  const useVideo = !deviceProfile.isMobile && !videoFailed;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -37,7 +39,7 @@ export default function SplashScreen() {
   }, []);
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible || useVideo) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -236,7 +238,7 @@ export default function SplashScreen() {
       stop();
       window.removeEventListener("resize", resize);
     };
-  }, [deviceProfile.isMobile, visible]);
+  }, [deviceProfile.isMobile, useVideo, visible]);
 
   const handleSkip = () => {
     if (typeof window !== "undefined") {
@@ -253,7 +255,19 @@ export default function SplashScreen() {
 
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center bg-slate-950">
-      <canvas ref={canvasRef} className="h-full w-full" />
+      {useVideo ? (
+        <video
+          className="h-full w-full object-cover"
+          src="/assets/launch.mp4"
+          autoPlay
+          muted
+          playsInline
+          onEnded={handleSkip}
+          onError={() => setVideoFailed(true)}
+        />
+      ) : (
+        <canvas ref={canvasRef} className="h-full w-full" />
+      )}
       <div className="absolute inset-0 flex items-end justify-between p-6">
         <button
           onClick={handleSkip}
