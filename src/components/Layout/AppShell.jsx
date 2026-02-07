@@ -16,6 +16,22 @@ const navLinks = [
 
 export default function AppShell({ children }) {
   const pathname = usePathname();
+  const handleClearCache = async () => {
+    if (typeof window === "undefined") return;
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+      if ("caches" in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map((name) => caches.delete(name)));
+      }
+    } catch (error) {
+      // Best-effort cleanup; still force a reload below.
+    }
+    const url = new URL(window.location.href);
+    url.searchParams.set("refresh", Date.now().toString());
+    window.location.replace(url.toString());
+  };
 
   return (
     <div className="min-h-screen text-slate-100">
@@ -23,16 +39,16 @@ export default function AppShell({ children }) {
       <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-6 py-4">
           <div className="flex items-center gap-4">
-            <div className="flex items-center rounded-xl px-2 py-2">
+            <Link href="/" aria-label="Go to launcher" className="flex items-center rounded-xl px-2 py-2">
               <Image
                 src="/assets/give-go-logo%20%26%20sanixpert-logo.png"
                 alt="Give & Go and Sanixpert logos"
-                width={520}
+                width={650}
                 height={120}
                 priority
                 className="h-20 w-auto object-contain mix-blend-screen brightness-125 md:h-24"
               />
-            </div>
+            </Link>
             <div className="page-title hidden text-xs font-semibold uppercase tracking-[0.3em] text-amber-400 md:block">
               Sanitation Digital Operations
             </div>
@@ -53,6 +69,14 @@ export default function AppShell({ children }) {
               </Link>
             ))}
             </nav>
+            <button
+              type="button"
+              onClick={handleClearCache}
+              className="rounded-full border border-slate-700 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-orange-400 hover:text-orange-300"
+              title="Clear cache and refresh"
+            >
+              Clear Cache
+            </button>
           </div>
         </div>
       </header>
