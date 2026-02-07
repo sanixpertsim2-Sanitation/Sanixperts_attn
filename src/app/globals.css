@@ -1,15 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0b1220;
-  --foreground: #eaf2ff;
-  --surface: #0f1c32;
-  --surface-strong: #122645;
-  --accent: #f97316;
-  --accent-strong: #f59e0b;
+  --background: #05070c;
+  --foreground: #f3f4f6;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-strong: rgba(255, 255, 255, 0.08);
+  --accent: #22c55e;
+  --accent-strong: #2dd4bf;
   --success: #22c55e;
   --danger: #ef4444;
-  --muted: #94a3b8;
+  --muted: #9ca3af;
+  --ease-premium: cubic-bezier(.22, 1, .36, 1);
 }
 
 @theme inline {
@@ -20,10 +21,155 @@
 }
 
 body {
-  background: radial-gradient(circle at top, #122645 0%, #0b1220 55%, #0a0f1c 100%);
+  background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(34, 197, 94, 0.08), transparent 40%),
+    radial-gradient(circle at 70% 80%, rgba(45, 212, 191, 0.06), transparent 45%),
+    linear-gradient(180deg, #05070c, #0b1220);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    repeating-linear-gradient(
+      120deg,
+      rgba(45, 212, 191, 0.04),
+      rgba(45, 212, 191, 0.04) 1px,
+      transparent 1px,
+      transparent 90px
+    );
+  animation: sanitationFlow 40s linear infinite;
+  opacity: 0.25;
+}
+
+@keyframes sanitationFlow {
+  to {
+    transform: translateY(-220px);
+  }
+}
+
+.app-shell .rounded-2xl,
+.app-shell .rounded-3xl {
+  background: var(--surface);
+  border-color: var(--surface-strong);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+.page-title {
+  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 1.2rem;
+  background: linear-gradient(
+    90deg,
+    #f3f4f6,
+    var(--accent-strong),
+    var(--accent)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: titleReveal .9s var(--ease-premium) forwards;
+}
+
+.page-title::after {
+  content: "";
+  display: block;
+  width: 64px;
+  height: 4px;
+  margin-top: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+  box-shadow: 0 0 18px rgba(34, 197, 94, 0.6);
+}
+
+@keyframes titleReveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.metric-value {
+  font-size: 1.8rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.status {
+  transition: background .5s var(--ease-premium),
+              box-shadow .5s var(--ease-premium);
+}
+
+.status.clean {
+  background: rgba(34, 197, 94, 0.12);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.35);
+}
+
+.status.warning {
+  background: rgba(250, 204, 21, 0.12);
+}
+
+.status.danger {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.health-ring .progress {
+  stroke: var(--accent);
+  stroke-dasharray: 327;
+  stroke-dashoffset: 327;
+  transition: stroke-dashoffset 1.2s var(--ease-premium);
+}
+
+@media (max-width: 768px) {
+  .app-shell .rounded-2xl,
+  .app-shell .rounded-3xl {
+    border-radius: 14px;
+  }
+
+  .metric-value {
+    font-size: 1.4rem;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 button:disabled {

@@ -33,8 +33,8 @@ export default function AppShell({ children }) {
                 className="h-10 w-auto object-contain drop-shadow-md"
               />
             </div>
-            <div className="hidden text-xs font-semibold uppercase tracking-[0.3em] text-amber-400 md:block">
-              Sanitation Digital Checklist
+            <div className="page-title hidden text-xs font-semibold uppercase tracking-[0.3em] text-amber-400 md:block">
+              Sanitation Digital Operations
             </div>
           </div>
           <div className="hidden items-center gap-3 md:flex">
@@ -57,7 +57,9 @@ export default function AppShell({ children }) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl px-6 py-10">{children}</main>
+      <main className="app-shell mx-auto w-full max-w-6xl px-6 py-10">
+        {children}
+      </main>
 
       <footer className="border-t border-slate-800/70 py-6 text-center text-xs text-slate-400">
         Sanixpert Digital Sanitation Checklist • Give & Go Facility

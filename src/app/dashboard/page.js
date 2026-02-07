@@ -12,6 +12,15 @@ export default function DashboardPage() {
     return { macy: macyPercent, jfk: 0, cece: 0 };
   }, [state.stages]);
 
+  const statusClass = (stage) => {
+    if (stage.toLowerCase().includes("released")) return "clean";
+    if (stage.toLowerCase().includes("damage") || stage.toLowerCase().includes("handover")) {
+      return "warning";
+    }
+    if (stage.toLowerCase().includes("stopped")) return "danger";
+    return "warning";
+  };
+
   const highSeverity = state.damageReports.filter(
     (report) => report.severity === "High"
   );
@@ -28,7 +37,10 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        {["macy", "jfk", "cece"].map((key) => (
+        {["macy", "jfk", "cece"].map((key) => {
+          const percent = completion[key];
+          const offset = 327 - (327 * percent) / 100;
+          return (
           <div
             key={key}
             className="rounded-2xl border border-slate-700/70 bg-slate-900/60 p-4"
@@ -36,17 +48,40 @@ export default function DashboardPage() {
             <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
               {key.toUpperCase()}
             </p>
-            <p className="mt-2 text-3xl font-bold text-blue-200">
-              {completion[key]}%
-            </p>
+            <div className="mt-4 flex items-center justify-between gap-4">
+              <div>
+                <p className="text-3xl font-bold text-blue-200">{percent}%</p>
+                <p className="metric-label">Completion</p>
+              </div>
+              <svg className="health-ring h-16 w-16 -rotate-90">
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="26"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.12)"
+                  strokeWidth="6"
+                />
+                <circle
+                  className="progress"
+                  cx="32"
+                  cy="32"
+                  r="26"
+                  fill="none"
+                  strokeWidth="6"
+                  style={{ strokeDashoffset: offset }}
+                />
+              </svg>
+            </div>
             <div className="mt-3 h-2 rounded-full bg-slate-800">
               <div
                 className="h-2 rounded-full bg-blue-500"
-                style={{ width: `${completion[key]}%` }}
+                style={{ width: `${percent}%` }}
               />
             </div>
           </div>
-        ))}
+        );
+        })}
       </div>
 
       {highSeverity.length > 0 && (
@@ -74,7 +109,9 @@ export default function DashboardPage() {
             {Object.entries(state.lineStatus).map(([key, status]) => (
               <div
                 key={key}
-                className="rounded-xl border border-slate-700/50 bg-slate-950/50 p-3"
+                className={`status rounded-xl border border-slate-700/50 bg-slate-950/50 p-3 ${statusClass(
+                  status.stage
+                )}`}
               >
                 <p className="font-semibold">
                   {key.toUpperCase()} Production: {status.stage}
