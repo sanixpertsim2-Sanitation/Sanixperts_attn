@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
-import LiveDateTime from "./LiveDateTime";
 import SplashScreen from "./SplashScreen";
+import BrandMark from "./BrandMark";
 
 const navLinks = [
   { href: "/", label: "Launcher" },
@@ -54,15 +53,8 @@ export default function AppShell({ children }) {
       <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 md:gap-6 md:px-6">
           <div className="flex items-center gap-4">
-            <Link href="/" aria-label="Go to launcher" className="flex items-center rounded-xl px-2 py-2">
-              <Image
-                src="/assets/give-go-logo%20%26%20sanixpert-logo.png"
-                alt="Give & Go and Sanixpert logos"
-                width={650}
-                height={120}
-                priority
-                className="h-20 w-auto object-contain mix-blend-screen brightness-125 md:h-24"
-              />
+            <Link href="/" aria-label="Go to launcher">
+              <BrandMark />
             </Link>
             <div className="page-title hidden text-xs font-semibold uppercase tracking-[0.3em] text-amber-400 md:block">
               Sanitation Digital Operations
