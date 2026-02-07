@@ -71,7 +71,9 @@ export default function AppShell({ children }) {
             </nav>
             <button
               type="button"
-              onClick={handleClearCache}
+              onClick={async () => {
+                await handleClearCache();
+              }}
               className="rounded-full border border-slate-700 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-orange-400 hover:text-orange-300"
               title="Clear cache and refresh"
             >
