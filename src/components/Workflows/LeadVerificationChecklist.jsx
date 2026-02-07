@@ -26,7 +26,7 @@ export default function LeadVerificationChecklist({ onComplete, tasks = [] }) {
       activeTasks.every((_, idx) => {
         const response = responses[idx];
         if (!response?.choice || !response.photo) return false;
-        if (response.choice !== "Yes" && !response.description) return false;
+        if (response.choice !== "Verified" && !response.description) return false;
         return true;
       }),
     [responses, activeTasks]
@@ -35,11 +35,11 @@ export default function LeadVerificationChecklist({ onComplete, tasks = [] }) {
   return (
     <section className="space-y-4 rounded-3xl border border-indigo-500/30 bg-slate-900/60 p-6">
       <h2 className="text-lg font-semibold text-indigo-200">
-        Stage 5: Lead Verification Checklist
+        Stage 5: Area Lead Verification
       </h2>
       <p className="text-xs text-slate-400">
-        Each item requires a camera verification. Description required for No
-        or N/A responses.
+        Each item requires a camera verification. Description required for
+        Needs Re-clean or Findings.
       </p>
 
       <div className="space-y-4">
@@ -48,9 +48,11 @@ export default function LeadVerificationChecklist({ onComplete, tasks = [] }) {
             key={task}
             className="rounded-2xl border border-slate-700/70 bg-slate-950/60 p-4"
           >
-            <p className="text-sm font-semibold text-slate-100">{task}</p>
+            <p className="text-sm font-semibold text-slate-100">
+              {task} <span className="text-red-400">*</span>
+            </p>
             <div className="mt-3 flex gap-3">
-              {["Yes", "No", "N/A"].map((choice) => (
+              {["Verified", "Needs Re-clean", "Findings"].map((choice) => (
                 <button
                   key={choice}
                   onClick={() =>
@@ -71,7 +73,7 @@ export default function LeadVerificationChecklist({ onComplete, tasks = [] }) {
             </div>
             <div className="mt-4 space-y-3">
               <CameraCapture
-                label="Verification Photo (Camera Only)"
+                label="Verification Photo (Camera Only) *"
                 required
                 onCapture={(photo) =>
                   setResponses((prev) => ({
@@ -83,7 +85,7 @@ export default function LeadVerificationChecklist({ onComplete, tasks = [] }) {
               <textarea
                 className="min-h-[80px] w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-sm text-slate-100"
                 placeholder={
-                  responses[idx]?.choice === "Yes"
+                  responses[idx]?.choice === "Verified"
                     ? "Notes (optional)..."
                     : "Describe the issue..."
                 }

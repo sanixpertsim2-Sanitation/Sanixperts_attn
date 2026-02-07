@@ -64,7 +64,8 @@ export default function HelpUnlock() {
           ) : (
             <div className="mt-4 space-y-2">
               <p className="text-xs text-amber-200">
-                Restore hidden stages for correction:
+                Restoring a stage can impact future cleaning locks. Please
+                confirm the change is required before submitting.
               </p>
               {[
                 { key: "preClean", label: "Pre-Clean Submitted" },

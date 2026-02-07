@@ -7,7 +7,9 @@ import { useApp } from "@/context/AppContext";
 const lines = [
   { id: "production", label: "Production", active: true },
   { id: "decoration", label: "Decoration", active: true },
-  { id: "packaging", label: "Packaging", active: false },
+  { id: "spiral", label: "Spiral", active: true },
+  { id: "palletizing", label: "Palletizing", active: true },
+  { id: "oven", label: "Oven", active: true },
 ];
 
 export default function LinesPage() {

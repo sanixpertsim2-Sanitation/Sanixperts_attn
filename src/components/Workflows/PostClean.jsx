@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import FaceIdGate from "./FaceIdGate";
 import CameraCapture from "./CameraCapture";
@@ -11,6 +11,7 @@ export default function PostClean({
   questions = [],
   lineName = "MACY Production",
   sectionId = "post-clean-stage",
+  showHandover = true,
 }) {
   const {
     state,
@@ -22,7 +23,6 @@ export default function PostClean({
   const [bagsRetrieved, setBagsRetrieved] = useState("");
   const [showMismatch, setShowMismatch] = useState(false);
   const [handoverChoice, setHandoverChoice] = useState(null);
-  const [photo, setPhoto] = useState(null);
   const openReportsCount = state.damageReports.filter(
     (report) => report.status === "Open"
   ).length;
@@ -65,6 +65,13 @@ export default function PostClean({
     return null;
   }
 
+  useEffect(() => {
+    if (!showHandover) {
+      setHandoverChoice("no");
+      setHandoverRequired(false);
+    }
+  }, [showHandover, setHandoverRequired]);
+
   const handleSubmit = () => {
     const covered = Number(state.bagCounts.covered || 0);
     const retrieved = Number(bagsRetrieved || 0);
@@ -106,7 +113,7 @@ export default function PostClean({
       </div>
 
       <FaceIdGate
-        title="Post-Clean Face Verification"
+        title="Post-Clean Face Verification *"
         onVerified={(user) => {
           setVerifiedUser(user);
           markStageInProgress("postClean", user.name);
@@ -115,7 +122,7 @@ export default function PostClean({
 
       <div className="rounded-2xl border border-slate-700/70 bg-slate-950/60 p-4">
         <label className="text-xs uppercase tracking-[0.2em] text-slate-400">
-          Bags Retrieved
+          Bags Retrieved <span className="text-red-400">*</span>
         </label>
         <input
           type="number"
@@ -135,7 +142,9 @@ export default function PostClean({
             key={question}
             className="rounded-2xl border border-slate-700/70 bg-slate-950/50 p-4"
           >
-            <p className="text-sm font-semibold text-slate-200">{question}</p>
+            <p className="text-sm font-semibold text-slate-200">
+              {question} <span className="text-red-400">*</span>
+            </p>
             <div className="mt-3 flex gap-3">
               {["Yes", "No", "N/A"].map((choice) => (
                 <button
@@ -159,7 +168,7 @@ export default function PostClean({
             {responses[index]?.response && (
               <div className="mt-4 space-y-3">
                 <CameraCapture
-                  label="Photo Evidence (Camera Only)"
+                  label="Photo Evidence (Camera Only) *"
                   required
                   onCapture={(photo) =>
                     setResponses((prev) => ({
@@ -197,39 +206,35 @@ export default function PostClean({
         ))}
       </div>
 
-      <CameraCapture
-        label="Post-Clean Photo Evidence"
-        required
-        onCapture={setPhoto}
-      />
-
       <DamageAcknowledgement lineName={lineName} />
 
-      <div className="rounded-2xl border border-slate-700/70 bg-slate-950/60 p-4">
-        <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-          Handover Required?
-        </p>
-        <div className="mt-3 flex gap-3">
-          {[
-            { value: "yes", label: "Yes" },
-            { value: "no", label: "No" },
-          ].map((option) => (
-            <button
-              key={option.value}
-              onClick={() => handleHandover(option.value)}
-              className={`rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] ${
-                handoverChoice === option.value
-                  ? "border-emerald-400 bg-emerald-400/20 text-emerald-300"
-                  : "border-slate-600 text-slate-300"
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
+      {showHandover && (
+        <div className="rounded-2xl border border-slate-700/70 bg-slate-950/60 p-4">
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+            Handover Required? <span className="text-red-400">*</span>
+          </p>
+          <div className="mt-3 flex gap-3">
+            {[
+              { value: "yes", label: "Yes" },
+              { value: "no", label: "No" },
+            ].map((option) => (
+              <button
+                key={option.value}
+                onClick={() => handleHandover(option.value)}
+                className={`rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] ${
+                  handoverChoice === option.value
+                    ? "border-emerald-400 bg-emerald-400/20 text-emerald-300"
+                    : "border-slate-600 text-slate-300"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      {bagsRetrieved && photo && handoverChoice && checklistComplete ? (
+      {bagsRetrieved && (showHandover ? handoverChoice : true) && checklistComplete ? (
         <button
           onClick={handleSubmit}
           disabled={openReportsCount > 0}

@@ -89,7 +89,7 @@ export default function PreClean({
       </div>
 
       <FaceIdGate
-        title="Pre-Clean Face Verification"
+        title="Pre-Clean Face Verification *"
         onVerified={(user) => {
           setVerifiedUser(user);
           markStageInProgress("preClean", user.name);
@@ -98,7 +98,7 @@ export default function PreClean({
 
       <div className="rounded-2xl border border-slate-700/70 bg-slate-950/60 p-4">
         <label className="text-xs uppercase tracking-[0.2em] text-slate-400">
-          Number of Bags Covered
+          Number of Bags Covered <span className="text-red-400">*</span>
         </label>
         <input
           type="number"
@@ -115,7 +115,9 @@ export default function PreClean({
             key={question}
             className="rounded-2xl border border-slate-700/70 bg-slate-950/50 p-4"
           >
-            <p className="text-sm font-semibold text-slate-200">{question}</p>
+            <p className="text-sm font-semibold text-slate-200">
+              {question} <span className="text-red-400">*</span>
+            </p>
             <div className="mt-3 flex gap-3">
               {["Yes", "No", "N/A"].map((choice) => (
                 <button
@@ -135,7 +137,7 @@ export default function PreClean({
               responses[index]?.response !== "Yes" && (
               <div className="mt-4">
                 <CameraCapture
-                  label="Photo Evidence (Camera Only)"
+                  label="Photo Evidence (Camera Only) *"
                   required
                   onCapture={(photo) => handlePhoto(index, photo)}
                 />
