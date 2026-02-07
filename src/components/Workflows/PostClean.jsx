@@ -61,16 +61,16 @@ export default function PostClean({
     [responses, checklistQuestions]
   );
 
-  if (!state.stages.preClean || state.stages.postClean) {
-    return null;
-  }
-
   useEffect(() => {
     if (!showHandover) {
       setHandoverChoice("no");
       setHandoverRequired(false);
     }
   }, [showHandover, setHandoverRequired]);
+
+  if (!state.stages.preClean || state.stages.postClean) {
+    return null;
+  }
 
   const handleSubmit = () => {
     const covered = Number(state.bagCounts.covered || 0);
