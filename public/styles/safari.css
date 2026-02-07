@@ -18,8 +18,3 @@ svg {
   height: auto;
 }
 
-@supports (-webkit-touch-callout: none) {
-  .bottom-nav {
-    transform: translateZ(0);
-  }
-}

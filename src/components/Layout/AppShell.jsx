@@ -100,19 +100,6 @@ export default function AppShell({ children }) {
           </footer>
         </div>
 
-        <nav className="bottom-nav" aria-label="Primary">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`bottom-nav-item ${
-                pathname === link.href ? "is-active" : ""
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
       </div>
     </div>
   );
