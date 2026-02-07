@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -16,6 +17,20 @@ const navLinks = [
 
 export default function AppShell({ children }) {
   const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {
+        // Silent fail keeps UI responsive even if SW fails.
+      });
+    }
+  }, []);
   const handleClearCache = async () => {
     if (typeof window === "undefined") return;
     try {
@@ -37,7 +52,7 @@ export default function AppShell({ children }) {
     <div className="min-h-screen text-slate-100">
       <SplashScreen />
       <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-6 py-4">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 md:gap-6 md:px-6">
           <div className="flex items-center gap-4">
             <Link href="/" aria-label="Go to launcher" className="flex items-center rounded-xl px-2 py-2">
               <Image
@@ -52,6 +67,17 @@ export default function AppShell({ children }) {
             <div className="page-title hidden text-xs font-semibold uppercase tracking-[0.3em] text-amber-400 md:block">
               Sanitation Digital Operations
             </div>
+          </div>
+          <div className="flex items-center gap-2 md:hidden">
+            <button
+              type="button"
+              onClick={() => setMobileOpen((prev) => !prev)}
+              className="rounded-full border border-slate-700 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-orange-400 hover:text-orange-300"
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-nav"
+            >
+              {mobileOpen ? "Close" : "Menu"}
+            </button>
           </div>
           <div className="hidden items-center gap-3 md:flex">
             <nav className="flex items-center gap-3 text-sm font-semibold text-slate-300">
@@ -81,9 +107,38 @@ export default function AppShell({ children }) {
             </button>
           </div>
         </div>
+        {mobileOpen && (
+          <div id="mobile-nav" className="mobile-nav-panel md:hidden">
+            <nav className="flex flex-col gap-2 text-sm font-semibold text-slate-200">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`rounded-xl px-4 py-3 transition ${
+                    pathname === link.href
+                      ? "bg-orange-500 text-white"
+                      : "hover:bg-slate-800/70"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+            <button
+              type="button"
+              onClick={async () => {
+                await handleClearCache();
+              }}
+              className="mt-4 w-full rounded-xl border border-slate-700 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-orange-400 hover:text-orange-300"
+              title="Clear cache and refresh"
+            >
+              Clear Cache
+            </button>
+          </div>
+        )}
       </header>
 
-      <main className="app-shell mx-auto w-full max-w-6xl px-6 py-10">
+      <main className="app-shell mx-auto w-full max-w-6xl px-4 py-6 md:px-6 md:py-10">
         {children}
       </main>
 

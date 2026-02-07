@@ -29,6 +29,18 @@ body {
   overflow-x: hidden;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -69,6 +81,23 @@ body::after {
   border-color: var(--surface-strong);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+.mobile-nav-panel {
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(3, 7, 18, 0.96);
+  padding: 1rem 1rem 1.25rem;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll table {
+  min-width: 640px;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .page-title {
@@ -175,4 +204,11 @@ body::after {
 button:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+button,
+input,
+select,
+textarea {
+  min-height: 44px;
 }
