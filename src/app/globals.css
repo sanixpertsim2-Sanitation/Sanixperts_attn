@@ -136,7 +136,6 @@ body::after {
   flex-direction: column;
   flex: 1;
   min-width: 0;
-  width: 100%;
   overflow-x: hidden;
 }
 
@@ -245,6 +244,10 @@ body::after {
 
   .app-sidebar {
     display: block;
+  }
+
+  .app-main {
+    width: auto;
   }
 
   .app-main-content {
