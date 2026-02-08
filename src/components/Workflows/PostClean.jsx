@@ -6,6 +6,7 @@ import FaceIdGate from "./FaceIdGate";
 import CameraCapture from "./CameraCapture";
 import LiveDateTime from "@/components/Layout/LiveDateTime";
 import DamageAcknowledgement from "./DamageAcknowledgement";
+import AnnouncementBanner from "@/components/Layout/AnnouncementBanner";
 
 export default function PostClean({
   questions = [],
@@ -18,6 +19,7 @@ export default function PostClean({
     completePostClean,
     setHandoverRequired,
     markStageInProgress,
+    setVerificationData,
   } = useApp();
   const [verifiedUser, setVerifiedUser] = useState(state.currentUser);
   const [bagsRetrieved, setBagsRetrieved] = useState("");
@@ -100,6 +102,9 @@ export default function PostClean({
       id={sectionId}
       className="space-y-6 rounded-3xl border border-emerald-500/30 bg-slate-900/60 p-6 shadow-xl"
     >
+      {/* Announcement Banner */}
+      <AnnouncementBanner lineName={lineName} />
+      
       <div>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-xl font-semibold text-emerald-200">
@@ -110,10 +115,23 @@ export default function PostClean({
         <p className="text-xs text-slate-400">
           Unlocks only after Pre-Cleaning is submitted.
         </p>
+        
+        {/* Stage lock indicator */}
+        {state.stageLockedBy.postClean && state.stageLockedBy.postClean !== state.currentUser?.name && (
+          <div className="mt-2 rounded-lg bg-amber-500/10 border border-amber-400/30 p-3">
+            <p className="text-sm font-medium text-amber-200">
+              🔒 Stage locked by {state.stageLockedBy.postClean}
+            </p>
+            <p className="text-xs text-amber-300">
+              Only {state.stageLockedBy.postClean} or admin can proceed with this stage.
+            </p>
+          </div>
+        )}
       </div>
 
       <FaceIdGate
         title="Post-Clean Face Verification *"
+        stageKey="postClean"
         onVerified={(user) => {
           setVerifiedUser(user);
           markStageInProgress("postClean", user.name);
@@ -149,12 +167,20 @@ export default function PostClean({
               {["Yes", "No", "N/A"].map((choice) => (
                 <button
                   key={choice}
-                  onClick={() =>
+                  onClick={() => {
                     setResponses((prev) => ({
                       ...prev,
                       [index]: { ...prev[index], response: choice },
-                    }))
-                  }
+                    }));
+                    
+                    // Store for comprehensive report
+                    setVerificationData("postClean", index, {
+                      question,
+                      response: choice,
+                      photo: responses[index]?.photo,
+                      description: responses[index]?.description,
+                    });
+                  }}
                   className={`rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] ${
                     responses[index]?.response === choice
                       ? "border-amber-400 bg-amber-400/20 text-amber-300"
@@ -170,12 +196,20 @@ export default function PostClean({
                 <CameraCapture
                   label="Photo Evidence (Camera Only) *"
                   required
-                  onCapture={(photo) =>
+                  onCapture={(photo) => {
                     setResponses((prev) => ({
                       ...prev,
                       [index]: { ...prev[index], photo },
-                    }))
-                  }
+                    }));
+                    
+                    // Store for comprehensive report
+                    setVerificationData("postClean", index, {
+                      question,
+                      response: responses[index]?.response,
+                      photo,
+                      description: responses[index]?.description,
+                    });
+                  }}
                 />
                 <textarea
                   className="min-h-[80px] w-full rounded-lg border border-slate-700 bg-slate-950/60 p-3 text-sm text-slate-100"
@@ -185,15 +219,24 @@ export default function PostClean({
                       : "Describe the issue..."
                   }
                   value={responses[index]?.description || ""}
-                  onChange={(event) =>
+                  onChange={(event) => {
+                    const description = event.target.value;
                     setResponses((prev) => ({
                       ...prev,
                       [index]: {
                         ...prev[index],
-                        description: event.target.value,
+                        description,
                       },
-                    }))
-                  }
+                    }));
+                    
+                    // Store for comprehensive report
+                    setVerificationData("postClean", index, {
+                      question,
+                      response: responses[index]?.response,
+                      photo: responses[index]?.photo,
+                      description,
+                    });
+                  }}
                 />
                 {responses[index]?.response !== "Yes" && (
                   <p className="text-xs text-slate-400">

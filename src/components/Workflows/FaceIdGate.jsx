@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import LiveDateTime from "@/components/Layout/LiveDateTime";
 
-export default function FaceIdGate({ title, onVerified }) {
-  const { state, setCurrentUser } = useApp();
+export default function FaceIdGate({ title, onVerified, stageKey }) {
+  const { state, setCurrentUser, lockStageToUser, isStageAccessible } = useApp();
   const [inputName, setInputName] = useState(state.currentUser?.name || "");
   const [saved, setSaved] = useState(false);
 
@@ -19,8 +19,21 @@ export default function FaceIdGate({ title, onVerified }) {
       const name = inputName.trim();
       if (!name) return;
       if (state.currentUser?.name === name) return;
+      // Check stage access before proceeding
+      if (stageKey && !isStageAccessible(stageKey, name)) {
+        const lockedBy = state.stageLockedBy[stageKey];
+        alert(`This stage is currently being worked on by ${lockedBy}. Please wait for them to complete or contact admin.`);
+        return;
+      }
+
       const user = { name };
       setCurrentUser(user);
+      
+      // Lock the stage to this user
+      if (stageKey) {
+        lockStageToUser(stageKey, name);
+      }
+      
       onVerified(user);
       setSaved(true);
     }, 600);
@@ -47,8 +60,17 @@ export default function FaceIdGate({ title, onVerified }) {
             const name = inputName.trim();
             if (!name) return;
             if (state.currentUser?.name === name) return;
+            
+            // Check stage access
+            if (stageKey && !isStageAccessible(stageKey, name)) {
+              const lockedBy = state.stageLockedBy[stageKey];
+              alert(`This stage is locked by ${lockedBy}`);
+              return;
+            }
+            
             const user = { name };
             setCurrentUser(user);
+            if (stageKey) lockStageToUser(stageKey, name);
             onVerified(user);
             setSaved(true);
           }}
@@ -57,8 +79,17 @@ export default function FaceIdGate({ title, onVerified }) {
             const name = inputName.trim();
             if (!name) return;
             if (state.currentUser?.name === name) return;
+            
+            // Check stage access
+            if (stageKey && !isStageAccessible(stageKey, name)) {
+              const lockedBy = state.stageLockedBy[stageKey];
+              alert(`This stage is locked by ${lockedBy}`);
+              return;
+            }
+            
             const user = { name };
             setCurrentUser(user);
+            if (stageKey) lockStageToUser(stageKey, name);
             onVerified(user);
             setSaved(true);
           }}

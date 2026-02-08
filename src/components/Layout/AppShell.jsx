@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SplashScreen from "./SplashScreen";
 import BrandMark from "./BrandMark";
+import ProductionManager from "../Admin/ProductionManager";
 
 const navLinks = [
   { href: "/", label: "Launcher" },
@@ -147,8 +148,8 @@ export default function AppShell({ children }) {
               ))}
             </nav>
             
-            {/* Mobile clear cache */}
-            <div className="mt-3 border-t border-slate-700/30 pt-3">
+            {/* Admin and utility controls */}
+            <div className="mt-3 border-t border-slate-700/30 pt-3 space-y-2">
               <button
                 type="button"
                 onClick={async () => {
@@ -158,8 +159,12 @@ export default function AppShell({ children }) {
                 className="w-full rounded-md border border-slate-600/60 py-2.5 text-xs font-medium text-slate-300 transition-colors hover:border-orange-400/60 hover:text-orange-200"
                 title="Clear cache and refresh"
               >
-                Clear Cache & Refresh
+                🔄 Clear Cache & Refresh
               </button>
+              
+              <div className="pt-2">
+                <ProductionManager />
+              </div>
             </div>
           </div>
         )}
