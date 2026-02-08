@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useApp } from "@/context/AppContext";
-import BrandMark from "@/components/Layout/BrandMark";
+import { BrandMarkDashboard } from "@/components/Layout/BrandMark";
 
 export default function DashboardPage() {
   const { state } = useApp();
@@ -129,7 +129,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-2">
-        <BrandMark variant="dashboard" />
+        <BrandMarkDashboard />
         <h1 className="text-3xl font-bold text-blue-200">
           Sanixpert Command Center
         </h1>

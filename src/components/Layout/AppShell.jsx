@@ -30,6 +30,7 @@ export default function AppShell({ children }) {
       });
     }
   }, []);
+  
   const handleClearCache = async () => {
     if (typeof window === "undefined") return;
     try {
@@ -50,96 +51,128 @@ export default function AppShell({ children }) {
   return (
     <div className="min-h-[100dvh] text-slate-100">
       <SplashScreen />
-      <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-2 px-3 py-2 sm:gap-3 sm:px-4 sm:py-3 md:flex-nowrap md:gap-6 md:px-6 md:py-4">
-          <div className="flex items-center gap-3">
-            <Link href="/" aria-label="Go to launcher">
-              <BrandMark />
+      
+      {/* Mobile-first header: max 64px height, clean layout */}
+      <header className="app-header sticky top-0 z-50 border-b border-slate-700/50 bg-slate-950/95 backdrop-blur-sm">
+        <div className="header-content mx-auto w-full max-w-6xl">
+          
+          {/* Left: Logo - responsive variants */}
+          <div className="flex items-center">
+            <Link href="/" aria-label="Go to launcher" className="flex items-center">
+              {/* Mobile: icon only */}
+              <div className="lg:hidden">
+                <BrandMark variant="mobile" />
+              </div>
+              {/* Desktop: full brand lockup */}
+              <div className="hidden lg:block">
+                <BrandMark variant="desktop" />
+              </div>
             </Link>
-            <div className="page-title hidden text-xs font-semibold uppercase tracking-[0.3em] text-amber-400 md:block">
-              Digital Sanitation Checklist
-            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <nav className="hidden items-center gap-2 text-sm font-semibold text-slate-300 lg:gap-3 md:flex">
+          {/* Right: Navigation - mobile menu button, desktop nav */}
+          <div className="flex items-center gap-3">
+            
+            {/* Desktop navigation - hidden on mobile */}
+            <nav className="hidden items-center gap-2 lg:flex">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`rounded-full px-2 py-1 text-xs transition lg:px-3 lg:py-1.5 lg:text-sm ${
+                  className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                     pathname === link.href
-                      ? "bg-orange-500 text-white"
-                      : "hover:bg-slate-800/70"
+                      ? "bg-orange-500/90 text-white"
+                      : "text-slate-300 hover:bg-slate-800/60 hover:text-white"
                   }`}
                 >
-                  <span className="hidden lg:inline">{link.label}</span>
-                  <span className="lg:hidden">{link.label.charAt(0)}</span>
+                  {link.label}
                 </Link>
               ))}
+              
+              {/* Desktop clear cache */}
+              <button
+                type="button"
+                onClick={async () => {
+                  await handleClearCache();
+                }}
+                className="ml-2 rounded-md border border-slate-600 px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:border-orange-400/60 hover:text-orange-200"
+                title="Clear cache and refresh"
+              >
+                Clear Cache
+              </button>
             </nav>
+
+            {/* Mobile menu button - simplified */}
             <button
               type="button"
-              onClick={async () => {
-                await handleClearCache();
-              }}
-              className="hidden rounded-full border border-slate-700 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-orange-400 hover:text-orange-300 lg:px-3 lg:py-1.5 md:inline-flex"
-              title="Clear cache and refresh"
-            >
-              <span className="hidden lg:inline">Clear Cache</span>
-              <span className="lg:hidden">Clear</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setMobileOpen((prev) => !prev)}
-              className="rounded-full border border-slate-700 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-orange-400 hover:text-orange-300 sm:px-4 sm:py-2 md:hidden"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="mobile-touch-target rounded-md border border-slate-600/60 text-slate-200 transition-colors hover:border-orange-400/60 hover:text-orange-200 lg:hidden"
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav"
+              aria-label="Toggle navigation menu"
             >
-              {mobileOpen ? "×" : "☰"}
+              {mobileOpen ? (
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
+                  <path d="M13.5 4.5L4.5 13.5M4.5 4.5L13.5 13.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
+                  <path d="M2 5h14M2 9h14M2 13h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              )}
             </button>
           </div>
         </div>
 
-        <div
-          id="mobile-nav"
-          className={`mobile-nav md:hidden ${mobileOpen ? "is-open" : ""}`}
-          aria-hidden={!mobileOpen}
-        >
-          <nav className="grid grid-cols-1 gap-3 text-sm font-semibold text-slate-200 sm:grid-cols-2">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`rounded-xl px-4 py-3 text-center transition ${
-                  pathname === link.href
-                    ? "bg-orange-500 text-white"
-                    : "hover:bg-slate-800/70"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-          <button
-            type="button"
-            onClick={async () => {
-              await handleClearCache();
-            }}
-            className="mt-4 w-full rounded-xl border border-slate-700 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-orange-400 hover:text-orange-300"
-            title="Clear cache and refresh"
+        {/* Mobile navigation dropdown - clean and efficient */}
+        {mobileOpen && (
+          <div
+            id="mobile-nav"
+            className="mobile-nav-dropdown px-4 py-3 lg:hidden"
           >
-            Clear Cache
-          </button>
-        </div>
+            <nav className="space-y-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`block rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
+                    pathname === link.href
+                      ? "bg-orange-500/90 text-white"
+                      : "text-slate-300 hover:bg-slate-800/60 hover:text-white"
+                  }`}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+            
+            {/* Mobile clear cache */}
+            <div className="mt-3 border-t border-slate-700/30 pt-3">
+              <button
+                type="button"
+                onClick={async () => {
+                  await handleClearCache();
+                  setMobileOpen(false);
+                }}
+                className="w-full rounded-md border border-slate-600/60 py-2.5 text-xs font-medium text-slate-300 transition-colors hover:border-orange-400/60 hover:text-orange-200"
+                title="Clear cache and refresh"
+              >
+                Clear Cache & Refresh
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
-      <main className="app-shell mx-auto w-full max-w-6xl px-4 py-6 md:px-6 md:py-10">
+      {/* Main content - mobile-optimized spacing */}
+      <main className="mx-auto w-full max-w-6xl px-4 py-4 lg:px-6 lg:py-8">
         {children}
       </main>
 
-      <footer className="border-t border-slate-800/70 py-6 text-center text-xs text-slate-400">
-        Sanixpert Digital Sanitation Checklist • Give & Go Facility
+      {/* Footer - simplified */}
+      <footer className="border-t border-slate-700/30 px-4 py-6 text-center text-xs text-slate-500 lg:px-6">
+        Sanixpert Digital Operations • Give &amp; Go Facility
       </footer>
     </div>
   );
