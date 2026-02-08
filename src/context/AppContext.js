@@ -22,7 +22,24 @@ const defaultState = {
     preCleanBy: null,
     postCleanBy: null,
   },
+  stageCompletedBy: {
+    preClean: null,
+    postClean: null,
+    handover: null,
+    lead: null,
+  },
+  stageLockedBy: {
+    preClean: null,
+    postClean: null,
+    handover: null,
+    lead: null,
+  },
   leadChecklist: [],
+  verificationData: {
+    preClean: {},
+    postClean: {},
+  },
+  announcements: [],
   stageTimes: {
     preCleanAt: null,
     postCleanAt: null,
