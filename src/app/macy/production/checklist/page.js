@@ -98,7 +98,7 @@ export default function MacyProductionChecklistPage() {
         <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">
           {progressLabel}
         </div>
-        <div className="mt-5 grid gap-3 md:grid-cols-2">
+        <div className="mt-5 grid-responsive-mobile sm:grid-cols-2 xl:grid-cols-4 grid gap-3">
           {stageCards.map((stage) => {
             const card = (
               <div

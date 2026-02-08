@@ -51,7 +51,7 @@ export default function AppShell({ children }) {
     <div className="min-h-[100dvh] text-slate-100">
       <SplashScreen />
       <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 md:flex-nowrap md:gap-6 md:px-6 md:py-4">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-2 px-3 py-2 sm:gap-3 sm:px-4 sm:py-3 md:flex-nowrap md:gap-6 md:px-6 md:py-4">
           <div className="flex items-center gap-3">
             <Link href="/" aria-label="Go to launcher">
               <BrandMark />
@@ -62,18 +62,19 @@ export default function AppShell({ children }) {
           </div>
 
           <div className="flex items-center gap-2">
-            <nav className="hidden items-center gap-3 text-sm font-semibold text-slate-300 md:flex">
+            <nav className="hidden items-center gap-2 text-sm font-semibold text-slate-300 lg:gap-3 md:flex">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`rounded-full px-3 py-1.5 transition ${
+                  className={`rounded-full px-2 py-1 text-xs transition lg:px-3 lg:py-1.5 lg:text-sm ${
                     pathname === link.href
                       ? "bg-orange-500 text-white"
                       : "hover:bg-slate-800/70"
                   }`}
                 >
-                  {link.label}
+                  <span className="hidden lg:inline">{link.label}</span>
+                  <span className="lg:hidden">{link.label.charAt(0)}</span>
                 </Link>
               ))}
             </nav>
@@ -82,19 +83,20 @@ export default function AppShell({ children }) {
               onClick={async () => {
                 await handleClearCache();
               }}
-              className="hidden rounded-full border border-slate-700 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-orange-400 hover:text-orange-300 md:inline-flex"
+              className="hidden rounded-full border border-slate-700 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-orange-400 hover:text-orange-300 lg:px-3 lg:py-1.5 md:inline-flex"
               title="Clear cache and refresh"
             >
-              Clear Cache
+              <span className="hidden lg:inline">Clear Cache</span>
+              <span className="lg:hidden">Clear</span>
             </button>
             <button
               type="button"
               onClick={() => setMobileOpen((prev) => !prev)}
-              className="rounded-full border border-slate-700 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-orange-400 hover:text-orange-300 md:hidden"
+              className="rounded-full border border-slate-700 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-orange-400 hover:text-orange-300 sm:px-4 sm:py-2 md:hidden"
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav"
             >
-              {mobileOpen ? "Close" : "Menu"}
+              {mobileOpen ? "×" : "☰"}
             </button>
           </div>
         </div>
@@ -104,12 +106,12 @@ export default function AppShell({ children }) {
           className={`mobile-nav md:hidden ${mobileOpen ? "is-open" : ""}`}
           aria-hidden={!mobileOpen}
         >
-          <nav className="flex flex-col gap-2 text-sm font-semibold text-slate-200">
+          <nav className="grid grid-cols-1 gap-3 text-sm font-semibold text-slate-200 sm:grid-cols-2">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`rounded-xl px-4 py-3 transition ${
+                className={`rounded-xl px-4 py-3 text-center transition ${
                   pathname === link.href
                     ? "bg-orange-500 text-white"
                     : "hover:bg-slate-800/70"

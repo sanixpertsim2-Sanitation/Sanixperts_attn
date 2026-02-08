@@ -1,4 +1,4 @@
-const CACHE_NAME = "sanitation-shell-v1";
+const CACHE_NAME = "sanitation-shell-v2";
 const CORE_ASSETS = [
   "/",
   "/dashboard",
@@ -7,14 +7,44 @@ const CORE_ASSETS = [
   "/help",
   "/manifest.json",
   "/favicon.ico",
-  "/assets/give-go-logo%20%26%20sanixpert-logo.png"
+  "/assets/give-go-logo%20%26%20sanixpert-logo.png",
+  "/styles/safari.css",
+  "/icons/icon-192.png",
+  "/icons/icon-512.png"
+];
+
+const RESPONSIVE_ASSETS = [
+  "/assets/hero-glow.png",
+  "/assets/hero-glow.webm",
+  "/assets/launch.mp4",
+  "/assets/macy.jpg",
+  "/assets/jfk.jpg",
+  "/assets/cece.jpg"
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.addAll(CORE_ASSETS))
+      .then(async (cache) => {
+        // Cache core assets first (essential for offline)
+        await cache.addAll(CORE_ASSETS);
+        
+        // Cache responsive assets with error handling
+        const responsivePromises = RESPONSIVE_ASSETS.map(async (asset) => {
+          try {
+            const response = await fetch(asset);
+            if (response.ok) {
+              await cache.put(asset, response);
+            }
+          } catch (error) {
+            // Silently fail for non-essential responsive assets
+            console.warn(`Failed to cache ${asset}:`, error);
+          }
+        });
+        
+        await Promise.allSettled(responsivePromises);
+      })
       .then(() => self.skipWaiting())
   );
 });

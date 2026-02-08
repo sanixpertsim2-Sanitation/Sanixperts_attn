@@ -28,14 +28,14 @@ export default function DashboardPage() {
   );
 
   const overviewCards = (
-    <div className="grid gap-4 md:grid-cols-3">
+    <div className="grid-responsive-mobile sm:grid-cols-2 lg:grid-cols-3 grid gap-4">
       {["macy", "jfk", "cece"].map((key) => {
         const percent = completion[key];
         const offset = 327 - (327 * percent) / 100;
         return (
         <div
           key={key}
-          className="rounded-2xl border border-slate-700/70 bg-slate-900/60 p-4"
+          className="rounded-2xl border border-slate-700/70 bg-slate-900/60 p-responsive-md hover-lift"
         >
           <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
             {key.toUpperCase()}
@@ -138,8 +138,8 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <div className="md:hidden">
-        <div className="flex flex-wrap gap-2">
+      <div className="lg:hidden">
+        <div className="choice-buttons-responsive">
           {[
             { id: "overview", label: "Overview" },
             { id: "alerts", label: "Alerts" },
@@ -150,10 +150,10 @@ export default function DashboardPage() {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-wide ${
+              className={`btn-responsive-primary rounded-full border px-3 py-2 text-xs font-semibold uppercase tracking-wide transition sm:px-4 ${
                 activeTab === tab.id
-                  ? "border-orange-400 text-white"
-                  : "border-slate-700 text-slate-300"
+                  ? "border-orange-400 bg-orange-400/20 text-white"
+                  : "border-slate-700 text-slate-300 hover:border-orange-400/50"
               }`}
             >
               {tab.label}
@@ -203,11 +203,11 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="hidden md:block">
+      <div className="hidden lg:block">
         {overviewCards}
       </div>
 
-      <div className="hidden gap-6 md:grid lg:grid-cols-[1.2fr_1fr]">
+      <div className="dashboard-responsive hidden gap-6 lg:grid">
         {liveStatus}
         {activityFeed}
       </div>
