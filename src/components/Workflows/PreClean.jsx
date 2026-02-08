@@ -218,25 +218,30 @@ export default function PreClean({
               standards, wear required PPE when handling chemicals, and maintain
               a safe work environment during this cleaning cycle.
             </p>
-            <div className="space-y-3">
-              <label className="flex items-start gap-3 text-xs text-slate-300">
+            <div className="space-y-4">
+              <label className="flex items-start gap-4 cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={ackChecked}
                   onChange={(event) => setAckChecked(event.target.checked)}
-                  className="mt-1 h-5 w-5 rounded border-2 border-amber-400 bg-slate-900 checked:bg-amber-400 checked:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+                  className="acknowledgment-checkbox"
                 />
-                <div>
-                  <p className="font-medium text-amber-200">Safety Acknowledgment Required</p>
-                  <p className="text-slate-400 mt-1">
+                <div className="flex-1">
+                  <p className="font-semibold text-amber-200 mb-2">
+                    ✓ Safety Acknowledgment Required
+                  </p>
+                  <p className="text-sm text-slate-300 leading-relaxed">
                     I confirm that I will follow all GMP and sanitation standards, wear required PPE when handling chemicals, and maintain a safe work environment during this cleaning cycle.
                   </p>
                 </div>
               </label>
               
-              <div className="rounded-lg bg-amber-500/10 border border-amber-400/20 p-3">
+              <div className="rounded-lg bg-amber-500/10 border-2 border-amber-400/30 p-4">
+                <p className="text-xs font-medium text-amber-200 mb-1">
+                  📋 Important: Please check the box above to continue
+                </p>
                 <p className="text-xs text-amber-300">
-                  ✓ By checking this box, you acknowledge responsibility for safety compliance during the {title.toLowerCase()} process.
+                  By checking this box, you acknowledge responsibility for safety compliance during the {title.toLowerCase()} process.
                 </p>
               </div>
             </div>
