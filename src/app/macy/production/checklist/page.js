@@ -3,6 +3,7 @@
 import PreClean from "@/components/Workflows/PreClean";
 import PostClean from "@/components/Workflows/PostClean";
 import HelpUnlock from "@/components/Workflows/HelpUnlock";
+import LineReportSummary from "@/components/Reports/LineReportSummary";
 import { useApp } from "@/context/AppContext";
 import Link from "next/link";
 import { useCallback } from "react";
@@ -141,15 +142,8 @@ export default function MacyProductionChecklistPage() {
       <PreClean sectionId="pre-clean-stage" />
       <PostClean sectionId="post-clean-stage" />
 
-      {state.stages.lead && (
-        <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-5 text-sm text-emerald-100">
-          Line released for production. Report generated at{" "}
-          {state.stageTimes.leadAt
-            ? new Date(state.stageTimes.leadAt).toLocaleString()
-            : "just now"}
-          .
-        </div>
-      )}
+      {/* Comprehensive Report Summary - shows when line is fully complete */}
+      <LineReportSummary lineName="MACY Production" />
 
       <HelpUnlock />
     </div>

@@ -5,6 +5,7 @@ import { useApp } from "@/context/AppContext";
 import PreClean from "@/components/Workflows/PreClean";
 import PostClean from "@/components/Workflows/PostClean";
 import HandoverSection from "@/components/Workflows/HandoverSection";
+import LineReportSummary from "@/components/Reports/LineReportSummary";
 import Link from "next/link";
 
 const preCleanQuestions = [
@@ -72,6 +73,9 @@ export default function MacyDecorationChecklistPage() {
       />
 
       <HandoverSection lineName="MACY Decoration" />
+
+      {/* Comprehensive Report Summary - shows when line is fully complete */}
+      <LineReportSummary lineName="MACY Decoration" />
 
       <Link
         href="/macy/decoration/handover"
