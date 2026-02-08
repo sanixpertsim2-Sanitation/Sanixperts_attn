@@ -15,6 +15,7 @@ class MobileCompatibilityEngine {
     
     // Event listeners cleanup
     this.eventListeners = new Map();
+    this.listenerId = 0;
     this.resizeObserver = null;
     this.intersectionObserver = null;
   }
@@ -804,8 +805,7 @@ class MobileCompatibilityEngine {
         document.dispatchEvent(event);
       };
 
-      mq.addEventListener('change', handler);
-      this.eventListeners.set(`mq-${name}`, { mq, handler });
+      this.addEventListener(mq, 'change', handler);
     });
   }
 
@@ -926,8 +926,9 @@ class MobileCompatibilityEngine {
    * Add event listener with cleanup tracking
    */
   addEventListener(target, event, handler, options) {
+    if (!target || typeof target.addEventListener !== 'function') return;
     target.addEventListener(event, handler, options);
-    this.eventListeners.set(`${event}-${target.constructor.name}`, {
+    this.eventListeners.set(`${event}-${this.listenerId++}`, {
       target,
       event,
       handler,
@@ -941,7 +942,9 @@ class MobileCompatibilityEngine {
   cleanup() {
     // Remove event listeners
     this.eventListeners.forEach(({ target, event, handler, options }) => {
-      target.removeEventListener(event, handler, options);
+      if (target && typeof target.removeEventListener === 'function') {
+        target.removeEventListener(event, handler, options);
+      }
     });
     this.eventListeners.clear();
 
@@ -995,19 +998,3 @@ class MobileCompatibilityEngine {
 
 // Export for use in components
 export default MobileCompatibilityEngine;
-
-// Auto-initialize
-if (typeof window !== 'undefined') {
-  window.MobileCompatibilityEngine = MobileCompatibilityEngine;
-  
-  // Initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      window.mobileCompatibility = new MobileCompatibilityEngine();
-      window.mobileCompatibility.initialize();
-    });
-  } else {
-    window.mobileCompatibility = new MobileCompatibilityEngine();
-    window.mobileCompatibility.initialize();
-  }
-}

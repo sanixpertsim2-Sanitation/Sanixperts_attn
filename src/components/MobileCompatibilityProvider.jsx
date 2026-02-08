@@ -15,6 +15,15 @@ export function MobileCompatibilityProvider({ children }) {
   const [isMobile, setIsMobile] = useState(false);
   const [browserInfo, setBrowserInfo] = useState({});
   const [deviceInfo, setDeviceInfo] = useState({});
+  const [touchInfo, setTouchInfo] = useState({
+    hasTouch: false,
+    maxTouchPoints: 0,
+    touchActionSupported: false,
+    forceTouchSupported: false,
+    hoverSupported: true,
+  });
+  const [viewportInfo, setViewportInfo] = useState({});
+  const [pwaInfo, setPwaInfo] = useState({});
 
   useEffect(() => {
     // Initialize mobile compatibility engine
@@ -25,6 +34,9 @@ export function MobileCompatibilityProvider({ children }) {
     setIsMobile(engine.deviceInfo.isMobile);
     setBrowserInfo(engine.browserInfo);
     setDeviceInfo(engine.deviceInfo);
+    setTouchInfo(engine.touchInfo);
+    setViewportInfo(engine.viewportInfo);
+    setPwaInfo(engine.pwaInfo);
 
     // Add mobile-specific classes to body
     document.body.classList.add('mobile-optimized');
@@ -55,6 +67,9 @@ export function MobileCompatibilityProvider({ children }) {
     isMobile,
     browserInfo,
     deviceInfo,
+    touchInfo,
+    viewportInfo,
+    pwaInfo,
     isSafari: browserInfo.isSafari,
     isIOS: deviceInfo.isIOS,
     isAndroid: deviceInfo.isAndroid,

@@ -84,65 +84,18 @@ body::after {
 }
 
 .app-shell {
-  display: flex;
-  min-height: 100dvh;
   width: 100%;
-  flex-direction: column;
 }
 
-.app-sidebar {
+.mobile-nav {
   display: none;
-  width: 260px;
-  flex-shrink: 0;
-  border-right: 1px solid rgba(148, 163, 184, 0.2);
-  background: rgba(3, 7, 18, 0.85);
-  padding: 1.5rem 1.25rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(3, 7, 18, 0.96);
+  padding: 1rem;
 }
 
-.sidebar-brand {
-  margin-bottom: 1.5rem;
-}
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.sidebar-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  color: #cbd5f5;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-}
-
-.sidebar-link.is-active {
-  border-color: rgba(251, 146, 60, 0.6);
-  color: #ffffff;
-}
-
-.sidebar-action {
-  margin-top: 0.5rem;
-}
-
-.app-main {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-  overflow-x: hidden;
-}
-
-.app-main-content {
-  width: 100%;
-  max-width: 100%;
-  padding-bottom: 0;
+.mobile-nav.is-open {
+  display: block;
 }
 
 .table-scroll {
@@ -234,24 +187,6 @@ body::after {
 
   .metric-value {
     font-size: 1.4rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .app-shell {
-    flex-direction: row;
-  }
-
-  .app-sidebar {
-    display: block;
-  }
-
-  .app-main {
-    width: auto;
-  }
-
-  .app-main-content {
-    max-width: none;
   }
 }
 
