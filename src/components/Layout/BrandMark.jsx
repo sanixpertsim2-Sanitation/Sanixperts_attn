@@ -29,7 +29,7 @@ export default function BrandMark({ variant = "header", className = "" }) {
           width={260}
           height={48}
           priority={variant === "header"}
-          className="h-full w-auto object-contain"
+          className="h-full w-auto max-w-[170px] object-contain sm:max-w-none"
         />
       </div>
       <div className="hidden flex-col leading-tight sm:flex">
