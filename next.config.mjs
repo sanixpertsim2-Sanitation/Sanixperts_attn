@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  /* Turbopack compatibility */
+  turbopack: {},
+
   /* Mobile compatibility optimizations */
   experimental: {
     optimizeCss: true,
