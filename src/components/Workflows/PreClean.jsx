@@ -21,7 +21,7 @@ export default function PreClean({
   lineName = "MACY Production",
   sectionId = "pre-clean-stage",
 }) {
-  const { state, completePreClean, markStageInProgress } = useApp();
+  const { state, completePreClean, markStageInProgress, setVerificationData } = useApp();
   const [verifiedUser, setVerifiedUser] = useState(state.currentUser);
   const [bagsCovered, setBagsCovered] = useState(state.bagCounts.covered);
   const [responses, setResponses] = useState({});
@@ -42,24 +42,51 @@ export default function PreClean({
   }, [verifiedUser, bagsCovered, responses, showAck, activeQuestions]);
 
   const handleResponse = (index, response) => {
+    const updatedResponse = { ...responses[index], response };
     setResponses((prev) => ({
       ...prev,
-      [index]: { ...prev[index], response },
+      [index]: updatedResponse,
     }));
+    
+    // Store for comprehensive report
+    setVerificationData("preClean", index, {
+      question: activeQuestions[index],
+      response,
+      photo: updatedResponse.photo,
+      description: updatedResponse.description,
+    });
   };
 
   const handlePhoto = (index, photo) => {
+    const updatedResponse = { ...responses[index], photo };
     setResponses((prev) => ({
       ...prev,
-      [index]: { ...prev[index], photo },
+      [index]: updatedResponse,
     }));
+    
+    // Store for comprehensive report
+    setVerificationData("preClean", index, {
+      question: activeQuestions[index],
+      response: updatedResponse.response,
+      photo,
+      description: updatedResponse.description,
+    });
   };
 
   const handleDescription = (index, description) => {
+    const updatedResponse = { ...responses[index], description };
     setResponses((prev) => ({
       ...prev,
-      [index]: { ...prev[index], description },
+      [index]: updatedResponse,
     }));
+    
+    // Store for comprehensive report
+    setVerificationData("preClean", index, {
+      question: activeQuestions[index],
+      response: updatedResponse.response,
+      photo: updatedResponse.photo,
+      description,
+    });
   };
 
   const handleSubmit = () => {

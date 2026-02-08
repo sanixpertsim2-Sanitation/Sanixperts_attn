@@ -2,8 +2,8 @@
 
 import PreClean from "@/components/Workflows/PreClean";
 import PostClean from "@/components/Workflows/PostClean";
-import ProductionManager from "@/components/Admin/ProductionManager";
-import AnnouncementBanner from "@/components/Layout/AnnouncementBanner";
+import HelpUnlock from "@/components/Workflows/HelpUnlock";
+import LineReportSummary from "@/components/Reports/LineReportSummary";
 import { useApp } from "@/context/AppContext";
 import Link from "next/link";
 import { useCallback } from "react";
@@ -44,8 +44,6 @@ export default function MacyProductionChecklistPage() {
         ? "Completed"
         : state.stageInProgress.preCleanBy
         ? `In progress: ${state.stageInProgress.preCleanBy}`
-        : state.stageLockedBy.preClean
-        ? `🔒 Locked by ${state.stageLockedBy.preClean}`
         : "Ready",
       action: () => scrollToSection("pre-clean-stage"),
       disabled: state.stages.preClean,
@@ -57,8 +55,6 @@ export default function MacyProductionChecklistPage() {
         ? "Completed"
         : state.stageInProgress.postCleanBy
         ? `In progress: ${state.stageInProgress.postCleanBy}`
-        : state.stageLockedBy.postClean
-        ? `🔒 Locked by ${state.stageLockedBy.postClean}`
         : state.stages.preClean
         ? "Ready"
         : "Locked",
@@ -93,9 +89,6 @@ export default function MacyProductionChecklistPage() {
 
   return (
     <div className="space-y-8">
-      {/* Line Announcements */}
-      <AnnouncementBanner lineName="MACY Production" />
-      
       <div className="rounded-3xl border border-slate-700/70 bg-slate-900/60 p-6">
         <h1 className="text-2xl font-bold text-blue-200">
           MACY Cleaning Checklist
@@ -149,17 +142,10 @@ export default function MacyProductionChecklistPage() {
       <PreClean sectionId="pre-clean-stage" />
       <PostClean sectionId="post-clean-stage" />
 
-      {state.stages.lead && (
-        <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-5 text-sm text-emerald-100">
-          Line released for production. Report generated at{" "}
-          {state.stageTimes.leadAt
-            ? new Date(state.stageTimes.leadAt).toLocaleString()
-            : "just now"}
-          .
-        </div>
-      )}
+      {/* Comprehensive Report Summary - shows when line is fully complete */}
+      <LineReportSummary lineName="MACY Production" />
 
-      <ProductionManager />
+      <HelpUnlock />
     </div>
   );
 }

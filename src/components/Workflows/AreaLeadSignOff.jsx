@@ -7,6 +7,7 @@ import FaceIdGate from "./FaceIdGate";
 import LiveDateTime from "@/components/Layout/LiveDateTime";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { generateComprehensiveReport } from "@/utils/reportGenerator";
 
 export default function AreaLeadSignOff({ lineName = "MACY Production" }) {
   const { state, completeLeadSignoff } = useApp();
@@ -123,13 +124,30 @@ export default function AreaLeadSignOff({ lineName = "MACY Production" }) {
     doc.save(`sanixpert_macy_report_${Date.now()}.pdf`);
   };
 
+  const handleGenerateComprehensiveReport = () => {
+    if (!verifiedLead) {
+      setError("Lead verification required to generate report.");
+      return;
+    }
+    
+    const signature = sigRef.current && !sigRef.current.isEmpty() 
+      ? sigRef.current.getTrimmedCanvas().toDataURL("image/png")
+      : null;
+      
+    generateComprehensiveReport(state, lineName, verifiedLead.name, signature);
+  };
+
   const handleRelease = () => {
     if (!sigRef.current || sigRef.current.isEmpty()) {
       setError("Signature required for release.");
       return;
     }
     const signature = sigRef.current.getTrimmedCanvas().toDataURL("image/png");
-    generateReport(verifiedLead.name, signature);
+    
+    // Generate both reports
+    generateReport(verifiedLead.name, signature); // Original basic report
+    generateComprehensiveReport(state, lineName, verifiedLead.name, signature); // New comprehensive report
+    
     completeLeadSignoff({ name: verifiedLead.name, signature, lineName });
   };
 
@@ -231,13 +249,25 @@ export default function AreaLeadSignOff({ lineName = "MACY Production" }) {
         </div>
       )}
 
-      <button
-        onClick={handleRelease}
-        disabled={!verifiedLead}
-        className="w-full rounded-2xl bg-indigo-500 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white transition hover:bg-indigo-400"
-      >
-        Release Line for Production
-      </button>
+      <div className="space-y-3">
+        {/* Comprehensive Report Button */}
+        <button
+          onClick={handleGenerateComprehensiveReport}
+          disabled={!verifiedLead}
+          className="w-full rounded-xl border border-blue-500/50 bg-blue-500/10 py-3 text-sm font-semibold text-blue-200 transition hover:bg-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          📄 Generate Comprehensive Report (Preview)
+        </button>
+        
+        {/* Line Release Button */}
+        <button
+          onClick={handleRelease}
+          disabled={!verifiedLead}
+          className="w-full rounded-2xl bg-indigo-500 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white transition hover:bg-indigo-400 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          🚀 Release Line for Production & Generate Reports
+        </button>
+      </div>
     </section>
   );
 }

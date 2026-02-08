@@ -5,8 +5,7 @@ import { useApp } from "@/context/AppContext";
 import PreClean from "@/components/Workflows/PreClean";
 import PostClean from "@/components/Workflows/PostClean";
 import HandoverSection from "@/components/Workflows/HandoverSection";
-import AnnouncementBanner from "@/components/Layout/AnnouncementBanner";
-import ProductionManager from "@/components/Admin/ProductionManager";
+import LineReportSummary from "@/components/Reports/LineReportSummary";
 import Link from "next/link";
 
 const preCleanQuestions = [
@@ -51,9 +50,6 @@ export default function MacyDecorationChecklistPage() {
 
   return (
     <div className="space-y-8">
-      {/* Line Announcements */}
-      <AnnouncementBanner lineName="MACY Decoration" />
-      
       <div className="rounded-3xl border border-slate-700/70 bg-slate-900/60 p-6">
         <h1 className="text-2xl font-bold text-blue-200">
           MACY Decoration Cleaning Checklist
@@ -78,14 +74,15 @@ export default function MacyDecorationChecklistPage() {
 
       <HandoverSection lineName="MACY Decoration" />
 
+      {/* Comprehensive Report Summary - shows when line is fully complete */}
+      <LineReportSummary lineName="MACY Decoration" />
+
       <Link
         href="/macy/decoration/handover"
         className="inline-flex items-center rounded-2xl border border-amber-400/40 bg-amber-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-amber-200"
       >
         Handover Task Review
       </Link>
-
-      <ProductionManager />
     </div>
   );
 }
