@@ -24,7 +24,7 @@ export default function BrandMark({ variant = "header", className = "" }) {
     >
       <div className={`flex items-center ${styles.icon}`}>
         <Image
-          src="/assets/give-go-logo%20%26%20sanixpert-logo.png"
+          src="/assets/give-go-sanixpert-logo.png"
           alt="Give & Go logo"
           width={260}
           height={48}

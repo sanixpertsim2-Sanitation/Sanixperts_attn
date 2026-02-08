@@ -46,7 +46,7 @@ export default function SplashScreen() {
     if (!ctx) return;
 
     const logo = new Image();
-    logo.src = "/assets/give-go-logo & sanixpert-logo.png";
+    logo.src = "/assets/give-go-sanixpert-logo.png";
 
     const getDominantColor = (image) => {
       const off = document.createElement("canvas");
