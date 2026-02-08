@@ -1,3 +1,5 @@
+import ProductionManager from "@/components/Admin/ProductionManager";
+
 export default function HelpPage() {
   return (
     <div className="space-y-6">
@@ -67,13 +69,18 @@ export default function HelpPage() {
 
       <section className="space-y-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-5 text-sm text-amber-100">
         <h2 className="text-lg font-semibold text-amber-200">
-          Emergency / Admin Unlock (PIN 2451)
+          Production Management (PIN 2451)
         </h2>
         <ul className="list-disc space-y-1 pl-4">
-          <li>Use Help / Unlock at the bottom of a workflow.</li>
-          <li>Enter PIN 2451 to restore hidden stages.</li>
+          <li>Access reset/unlock controls for stages</li>
+          <li>Create announcements for production lines</li>
+          <li>Monitor stage locking and system status</li>
+          <li>Complete system reset for shift changes</li>
         </ul>
       </section>
+
+      {/* Production Manager Controls */}
+      <ProductionManager />
     </div>
   );
 }

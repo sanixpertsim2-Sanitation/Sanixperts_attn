@@ -568,15 +568,111 @@ export function AppProvider({ children }) {
     ]);
   };
 
-  const resetStages = (nextStages) => {
+  // Enhanced reset system: Unlock (keep data) vs Reset (clear data)
+  const unlockStages = (stageKeys) => {
     setState((prev) => ({
       ...prev,
-      stages: { ...prev.stages, ...nextStages },
-      bagCounts: {
-        covered: nextStages.preClean ? prev.bagCounts.covered : "",
-        retrieved: nextStages.postClean ? prev.bagCounts.retrieved : "",
+      stages: {
+        ...prev.stages,
+        ...stageKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {})
+      },
+      stageLockedBy: {
+        ...prev.stageLockedBy,
+        ...stageKeys.reduce((acc, key) => ({ ...acc, [key]: null }), {})
+      },
+      stageInProgress: {
+        ...prev.stageInProgress,
+        preCleanBy: stageKeys.includes("preClean") ? null : prev.stageInProgress.preCleanBy,
+        postCleanBy: stageKeys.includes("postClean") ? null : prev.stageInProgress.postCleanBy,
       },
     }));
+  };
+
+  const resetStages = (stageKeys) => {
+    setState((prev) => ({
+      ...prev,
+      stages: {
+        ...prev.stages,
+        ...stageKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {})
+      },
+      stageLockedBy: {
+        ...prev.stageLockedBy,
+        ...stageKeys.reduce((acc, key) => ({ ...acc, [key]: null }), {})
+      },
+      stageInProgress: {
+        ...prev.stageInProgress,
+        preCleanBy: stageKeys.includes("preClean") ? null : prev.stageInProgress.preCleanBy,
+        postCleanBy: stageKeys.includes("postClean") ? null : prev.stageInProgress.postCleanBy,
+      },
+      bagCounts: {
+        covered: stageKeys.includes("preClean") ? "" : prev.bagCounts.covered,
+        retrieved: stageKeys.includes("postClean") ? "" : prev.bagCounts.retrieved,
+      },
+      handoverRequired: stageKeys.includes("postClean") ? null : prev.handoverRequired,
+      leadChecklist: stageKeys.includes("lead") ? [] : prev.leadChecklist,
+      stageTimes: {
+        ...prev.stageTimes,
+        preCleanAt: stageKeys.includes("preClean") ? null : prev.stageTimes.preCleanAt,
+        postCleanAt: stageKeys.includes("postClean") ? null : prev.stageTimes.postCleanAt,
+        handoverAt: stageKeys.includes("handover") ? null : prev.stageTimes.handoverAt,
+        leadAt: stageKeys.includes("lead") ? null : prev.stageTimes.leadAt,
+      },
+    }));
+  };
+
+  // Complete system reset for shift changes
+  const resetAllData = () => {
+    setState(defaultState);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  };
+
+  // Stage locking system to prevent conflicts
+  const lockStageToUser = (stageKey, userName) => {
+    setState((prev) => ({
+      ...prev,
+      stageLockedBy: {
+        ...prev.stageLockedBy,
+        [stageKey]: userName,
+      },
+    }));
+  };
+
+  const isStageAccessible = (stageKey, userName) => {
+    const lockedBy = state.stageLockedBy[stageKey];
+    return !lockedBy || lockedBy === userName;
+  };
+
+  // Announcement system
+  const addAnnouncement = ({ lineName, message, expiresAt, createdBy }) => {
+    const announcement = {
+      id: `ann-${Date.now()}`,
+      lineName,
+      message,
+      createdBy,
+      createdAt: new Date().toISOString(),
+      expiresAt,
+    };
+    
+    setState((prev) => ({
+      ...prev,
+      announcements: [...prev.announcements, announcement],
+    }));
+  };
+
+  const removeAnnouncement = (id) => {
+    setState((prev) => ({
+      ...prev,
+      announcements: prev.announcements.filter(ann => ann.id !== id),
+    }));
+  };
+
+  const getActiveAnnouncements = (lineName) => {
+    const now = new Date();
+    return state.announcements.filter(ann => 
+      ann.lineName === lineName && new Date(ann.expiresAt) > now
+    );
   };
 
   const setLeadChecklist = (items) => {
@@ -598,6 +694,13 @@ export function AppProvider({ children }) {
       addDamageReport,
       updateDamageReport,
       resetStages,
+      unlockStages,
+      resetAllData,
+      lockStageToUser,
+      isStageAccessible,
+      addAnnouncement,
+      removeAnnouncement,
+      getActiveAnnouncements,
       setLeadChecklist,
     }),
     [state]
