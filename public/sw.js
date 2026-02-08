@@ -7,7 +7,7 @@ const CORE_ASSETS = [
   "/help",
   "/manifest.json",
   "/favicon.ico",
-  "/assets/give-go-logo%20%26%20sanixpert-logo.png",
+  "/assets/give-go-sanixpert-logo.png",
   "/styles/safari.css",
   "/icons/icon-192.png",
   "/icons/icon-512.png"
