@@ -187,15 +187,20 @@ export default function AreaLeadSignOff({ lineName = "MACY Production" }) {
               value={accessCode}
               onChange={(event) => setAccessCode(event.target.value)}
             />
-            <label className="flex items-start gap-3 text-xs text-slate-300">
+            <label className="flex items-start gap-4 text-sm text-slate-200 cursor-pointer">
               <input
                 type="checkbox"
                 checked={accessAck}
                 onChange={(event) => setAccessAck(event.target.checked)}
-                className="mt-1 h-4 w-4"
+                className="acknowledgment-checkbox mt-0.5"
               />
-              I acknowledge the handover details and confirm all sanitation
-              tasks are complete or documented for follow-up.
+              <div>
+                <p className="font-medium text-indigo-200 mb-1">✓ Acknowledgment Required</p>
+                <p className="text-xs text-slate-300">
+                  I acknowledge the handover details and confirm all sanitation
+                  tasks are complete or documented for follow-up.
+                </p>
+              </div>
             </label>
             <button
               onClick={() => {

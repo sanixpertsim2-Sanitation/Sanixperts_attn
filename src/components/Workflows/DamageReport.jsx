@@ -30,21 +30,41 @@ export default function DamageReport({ lineName = "MACY Production" }) {
   };
 
   const sendDamageAlert = async (reportData) => {
+    // Only send emails for High and Medium severity (not Low)
     if (!["High", "Medium"].includes(reportData.severity)) return;
-    await fetch("/api/send-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        to: "adarsh@sanixeprts.ca",
-        subject: `${reportData.severity} severity damage reported from ${reportData.lineName}`,
-        description: reportData.description,
-        photoUrl: reportData.photo?.dataUrl,
-        timestamp: reportData.photo?.timestamp,
-        equipmentArea: reportData.equipmentArea,
-        reporter: reportData.reportedBy,
-        severity: reportData.severity,
-      }),
-    });
+    
+    // Send to all three admin emails
+    const recipients = [
+      "adarsh@sanixperts.ca",
+      "sanixpertsadmin@sanixperts.ca",
+      "prabh@sanixperts.ca"
+    ];
+    
+    try {
+      const response = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: recipients.join(", "),
+          subject: `${reportData.severity} Severity Damage - ${reportData.lineName} | ${reportData.equipmentArea}`,
+          description: reportData.description,
+          photoData: reportData.photo?.dataUrl, // Full base64 data for attachment
+          timestamp: reportData.createdAt || new Date().toISOString(),
+          equipmentArea: reportData.equipmentArea,
+          reporter: reportData.reportedBy,
+          severity: reportData.severity,
+          lineName: reportData.lineName,
+        }),
+      });
+      
+      const result = await response.json();
+      if (!result.ok) {
+        console.error("Email notification failed:", result.error);
+      }
+    } catch (error) {
+      console.error("Failed to send damage alert email:", error);
+      // Don't block the damage report submission if email fails
+    }
   };
 
   const handleSubmit = async () => {
