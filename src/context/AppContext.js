@@ -679,6 +679,37 @@ export function AppProvider({ children }) {
     setState((prev) => ({ ...prev, leadChecklist: items }));
   };
 
+  // Store detailed verification data for comprehensive reports
+  const setVerificationData = (stage, questionIndex, data) => {
+    setState((prev) => ({
+      ...prev,
+      verificationData: {
+        ...prev.verificationData,
+        [stage]: {
+          ...prev.verificationData[stage],
+          [questionIndex]: {
+            question: data.question,
+            response: data.response,
+            photo: data.photo,
+            description: data.description,
+            timestamp: new Date().toISOString(),
+            verifiedBy: prev.currentUser?.name || "Unknown",
+          }
+        }
+      }
+    }));
+  };
+
+  const clearVerificationData = (stages) => {
+    setState((prev) => ({
+      ...prev,
+      verificationData: {
+        ...prev.verificationData,
+        ...stages.reduce((acc, stage) => ({ ...acc, [stage]: {} }), {})
+      }
+    }));
+  };
+
   const value = useMemo(
     () => ({
       state,
@@ -702,6 +733,8 @@ export function AppProvider({ children }) {
       removeAnnouncement,
       getActiveAnnouncements,
       setLeadChecklist,
+      setVerificationData,
+      clearVerificationData,
     }),
     [state]
   );
