@@ -6,6 +6,7 @@ import FaceIdGate from "./FaceIdGate";
 import CameraCapture from "./CameraCapture";
 import LiveDateTime from "@/components/Layout/LiveDateTime";
 import DamageAcknowledgement from "./DamageAcknowledgement";
+import AnnouncementBanner from "@/components/Layout/AnnouncementBanner";
 
 export default function PostClean({
   questions = [],
@@ -100,6 +101,9 @@ export default function PostClean({
       id={sectionId}
       className="space-y-6 rounded-3xl border border-emerald-500/30 bg-slate-900/60 p-6 shadow-xl"
     >
+      {/* Announcement Banner */}
+      <AnnouncementBanner lineName={lineName} />
+      
       <div>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-xl font-semibold text-emerald-200">
@@ -110,10 +114,23 @@ export default function PostClean({
         <p className="text-xs text-slate-400">
           Unlocks only after Pre-Cleaning is submitted.
         </p>
+        
+        {/* Stage lock indicator */}
+        {state.stageLockedBy.postClean && state.stageLockedBy.postClean !== state.currentUser?.name && (
+          <div className="mt-2 rounded-lg bg-amber-500/10 border border-amber-400/30 p-3">
+            <p className="text-sm font-medium text-amber-200">
+              🔒 Stage locked by {state.stageLockedBy.postClean}
+            </p>
+            <p className="text-xs text-amber-300">
+              Only {state.stageLockedBy.postClean} or admin can proceed with this stage.
+            </p>
+          </div>
+        )}
       </div>
 
       <FaceIdGate
         title="Post-Clean Face Verification *"
+        stageKey="postClean"
         onVerified={(user) => {
           setVerifiedUser(user);
           markStageInProgress("postClean", user.name);

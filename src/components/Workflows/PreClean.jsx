@@ -5,6 +5,7 @@ import { useApp } from "@/context/AppContext";
 import FaceIdGate from "./FaceIdGate";
 import CameraCapture from "./CameraCapture";
 import LiveDateTime from "@/components/Layout/LiveDateTime";
+import AnnouncementBanner from "@/components/Layout/AnnouncementBanner";
 
 const defaultQuestions = [
   "Verify the equipment for any inadequate condition and safety issues.",
@@ -78,6 +79,9 @@ export default function PreClean({
       id={sectionId}
       className="relative space-y-6 rounded-3xl border border-blue-500/30 bg-slate-900/60 p-6 shadow-xl"
     >
+      {/* Announcement Banner */}
+      <AnnouncementBanner lineName={lineName} />
+      
       <div>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-xl font-semibold text-blue-200">{title}</h2>
@@ -86,10 +90,23 @@ export default function PreClean({
         <p className="text-xs text-slate-400">
           Face ID + bag count required before cleaning begins.
         </p>
+        
+        {/* Stage lock indicator */}
+        {state.stageLockedBy.preClean && state.stageLockedBy.preClean !== state.currentUser?.name && (
+          <div className="mt-2 rounded-lg bg-amber-500/10 border border-amber-400/30 p-3">
+            <p className="text-sm font-medium text-amber-200">
+              🔒 Stage locked by {state.stageLockedBy.preClean}
+            </p>
+            <p className="text-xs text-amber-300">
+              Only {state.stageLockedBy.preClean} or admin can proceed with this stage.
+            </p>
+          </div>
+        )}
       </div>
 
       <FaceIdGate
         title="Pre-Clean Face Verification *"
+        stageKey="preClean"
         onVerified={(user) => {
           setVerifiedUser(user);
           markStageInProgress("preClean", user.name);
@@ -174,15 +191,28 @@ export default function PreClean({
               standards, wear required PPE when handling chemicals, and maintain
               a safe work environment during this cleaning cycle.
             </p>
-            <label className="flex items-start gap-3 text-xs text-slate-300">
-              <input
-                type="checkbox"
-                checked={ackChecked}
-                onChange={(event) => setAckChecked(event.target.checked)}
-                className="mt-1 h-4 w-4"
-              />
-              I understand and agree to the safety and compliance requirements.
-            </label>
+            <div className="space-y-3">
+              <label className="flex items-start gap-3 text-xs text-slate-300">
+                <input
+                  type="checkbox"
+                  checked={ackChecked}
+                  onChange={(event) => setAckChecked(event.target.checked)}
+                  className="mt-1 h-5 w-5 rounded border-2 border-amber-400 bg-slate-900 checked:bg-amber-400 checked:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+                />
+                <div>
+                  <p className="font-medium text-amber-200">Safety Acknowledgment Required</p>
+                  <p className="text-slate-400 mt-1">
+                    I confirm that I will follow all GMP and sanitation standards, wear required PPE when handling chemicals, and maintain a safe work environment during this cleaning cycle.
+                  </p>
+                </div>
+              </label>
+              
+              <div className="rounded-lg bg-amber-500/10 border border-amber-400/20 p-3">
+                <p className="text-xs text-amber-300">
+                  ✓ By checking this box, you acknowledge responsibility for safety compliance during the {title.toLowerCase()} process.
+                </p>
+              </div>
+            </div>
             <button
               onClick={() => ackChecked && setShowAck(false)}
               disabled={!ackChecked}
