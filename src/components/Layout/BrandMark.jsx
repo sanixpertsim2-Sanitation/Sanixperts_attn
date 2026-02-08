@@ -2,46 +2,75 @@
 
 import Image from "next/image";
 
+// Mobile-first logo system: icon-only on mobile, full lockup on desktop
 const variants = {
-  header: {
-    icon: "h-9 md:h-10",
-    title: "text-sm md:text-base",
-    subtitle: "text-[10px] md:text-xs",
+  // Mobile header - compact icon only
+  mobile: {
+    container: "flex items-center",
+    icon: "h-8 w-8", // Fixed square dimensions for mobile
+    showText: false,
   },
+  // Desktop header - full brand lockup
+  desktop: {
+    container: "flex items-center gap-3",
+    icon: "h-10", // Taller on desktop
+    title: "text-sm font-semibold tracking-wide",
+    subtitle: "text-xs font-medium tracking-wider text-slate-400",
+    showText: true,
+  },
+  // Dashboard variant - smaller overall
   dashboard: {
+    container: "flex items-center gap-2",
     icon: "h-7",
-    title: "text-[13px]",
-    subtitle: "text-[9px]",
+    title: "text-xs font-semibold tracking-wide",
+    subtitle: "text-[10px] font-medium tracking-wider text-slate-500",
+    showText: true,
   },
 };
 
-export default function BrandMark({ variant = "header", className = "" }) {
-  const styles = variants[variant] || variants.header;
-
+export default function BrandMark({ variant = "mobile", className = "" }) {
+  const config = variants[variant] || variants.mobile;
+  
   return (
-    <div
-      className={`flex min-h-[44px] items-center gap-3 rounded-xl px-2 py-2 text-slate-200 ${className}`}
-    >
-      <div className={`flex items-center ${styles.icon}`}>
+    <div className={`${config.container} ${className}`}>
+      
+      {/* Logo icon - mobile-first, no background images */}
+      <div className={`flex items-center justify-center ${config.icon}`}>
         <Image
           src="/assets/give-go-sanixpert-logo.png"
-          alt="Give & Go logo"
-          width={260}
-          height={48}
-          priority={variant === "header"}
-          className="h-full w-auto max-w-[170px] object-contain sm:max-w-none"
+          alt="Give & Go Sanitation"
+          width={40}
+          height={40}
+          priority={variant === "mobile"}
+          className="h-full w-full object-contain"
+          style={{
+            // Remove any background effects on mobile
+            filter: variant === "mobile" ? "none" : "brightness(1.1)",
+          }}
         />
       </div>
-      <div className="hidden flex-col leading-tight sm:flex">
-        <span className={`font-semibold tracking-[0.08em] ${styles.title}`}>
-          GIVE &amp; GO
-        </span>
-        <span
-          className={`font-medium tracking-[0.2em] text-slate-400/80 ${styles.subtitle}`}
-        >
-          SANIXPERTS
-        </span>
-      </div>
+
+      {/* Text lockup - hidden on mobile, visible on desktop */}
+      {config.showText && (
+        <div className="hidden flex-col leading-tight lg:flex">
+          <span className={config.title}>
+            GIVE &amp; GO
+          </span>
+          <span className={config.subtitle}>
+            SANIXPERTS
+          </span>
+        </div>
+      )}
     </div>
   );
+}
+
+// Helper component for pages that need desktop logo
+export function BrandMarkDesktop(props) {
+  return <BrandMark variant="desktop" {...props} />;
+}
+
+// Helper component for dashboard
+export function BrandMarkDashboard(props) {
+  return <BrandMark variant="dashboard" {...props} />;
 }
