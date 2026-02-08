@@ -51,7 +51,7 @@ export default function AppShell({ children }) {
     <div className="min-h-[100dvh] text-slate-100">
       <SplashScreen />
       <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 md:gap-6 md:px-6">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 md:flex-nowrap md:gap-6 md:px-6 md:py-4">
           <div className="flex items-center gap-3">
             <Link href="/" aria-label="Go to launcher">
               <BrandMark />
