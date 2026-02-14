@@ -9,62 +9,61 @@ def run_sync():
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     client = gspread.authorize(creds)
     
-    # Matches your filename exactly
+    # Target Sheet
     spreadsheet = client.open("IM2 Payroll January 26 - February 8 2026") 
     sheet = spreadsheet.worksheet("PAYROLL") 
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        # Standard desktop view
         context = browser.new_context(viewport={'width': 1280, 'height': 800})
         page = context.new_page()
         
         print("Opening NGTeco Portal...")
         page.goto("https://office.ngteco.com/login", wait_until="networkidle")
-        time.sleep(3) # Wait for elements to settle
+        time.sleep(5) # Critical wait for the portal to load the anonymous fields
 
-        # --- FORCE CLICK CHECKBOX ---
-        print("Forcing agreement checkbox click...")
+        # --- STEP 1: CLICK THE ANONYMOUS CHECKBOX ---
+        print("Checking for the agreement box...")
         try:
-            # Try to click the actual text 'I have read' which is usually linked to the box
-            agreement_text = page.get_by_text("I have read and agree")
-            agreement_text.click(force=True)
-            print("Agreement text clicked.")
+            # We look for the only checkbox on the page since it has no ID/Name
+            page.locator('input[type="checkbox"]').first.click(force=True)
+            print("Checkbox clicked.")
         except:
-            # Fallback: find any checkbox and click it
-            try:
-                page.locator('input[type="checkbox"]').first.click(force=True)
-                print("Checkbox clicked via locator.")
-            except:
-                print("Warning: Could not confirm checkbox click.")
+            print("Could not find checkbox by type, trying text click...")
+            page.get_by_text("I have read").click(force=True)
 
-        time.sleep(2) # Give the portal a moment to enable the inputs
+        time.sleep(2)
 
-        # --- FILL LOGIN ---
-        print("Filling credentials...")
+        # --- STEP 2: FILL ANONYMOUS LOGIN FIELDS ---
+        print("Attempting to fill anonymous fields...")
         try:
-            # We use a very broad selector to find the username field
-            page.locator('input').first.fill(os.environ["NGTECO_USER"])
-            # Second input is usually password
-            page.locator('input[type="password"]').fill(os.environ["NGTECO_PASS"])
+            # Find all input elements
+            inputs = page.locator('input').all()
             
-            # Click Login Button
-            page.get_by_role("button").filter(has_text="Login").click()
-            print("Login button clicked. Waiting for dashboard...")
+            # Usually: Input 0 = Checkbox, Input 1 = Username, Input 2 = Password
+            # We will use 'filter' to be safer
+            username_field = page.locator('input:not([type="checkbox"]):not([type="password"])').first
+            password_field = page.locator('input[type="password"]').first
+            
+            username_field.fill(os.environ["NGTECO_USER"])
+            password_field.fill(os.environ["NGTECO_PASS"])
+            
+            print("Credentials entered.")
+            
+            # Find the button that isn't a checkbox
+            page.locator('button[type="submit"], button:has-text("Login")').click()
+            print("Login submitted.")
         except Exception as e:
-            print(f"Failed to fill fields: {e}")
+            print(f"Failed to handle anonymous fields: {e}")
             return
 
-        # --- NAVIGATION ---
+        # --- STEP 3: SYNC DATA ---
         page.wait_for_load_state("networkidle")
-        print("Navigating to Time Card Management...")
+        time.sleep(5)
+        print("Navigating to Time Cards...")
         page.goto("https://office.ngteco.com/att/timecard/timecard")
-        
-        # Wait for the data table to load
         page.wait_for_selector("table", timeout=30000)
-        print("Timecard table found. Starting Sync...")
 
-        # --- DATA SYNC ---
         all_names = [n.strip() for n in sheet.col_values(2)] 
         date_headers = sheet.row_values(3)[4:19] 
 
@@ -76,11 +75,7 @@ def run_sync():
             
             p_name = cols[1].inner_text().strip()
             p_in = cols[2].inner_text().strip()
-            p_out = cols[3].inner_text().strip()
             total_h = cols[4].inner_text().strip()
-
-            if not p_out or any(x in p_out.lower() for x in ["n/a", "working", "--"]):
-                continue
 
             try:
                 p_dt = datetime.datetime.strptime(p_in, "%Y-%m-%d %H:%M:%S")
@@ -90,11 +85,10 @@ def run_sync():
                     row_idx = all_names.index(p_name) + 1
                     col_idx = date_headers.index(day_key) + 5
                     sheet.update_cell(row_idx, col_idx, total_h)
-                    print(f"SUCCESS: {p_name} | Day {day_key} | {total_h}h")
+                    print(f"SUCCESS: {p_name} | Day {day_key}")
             except:
                 continue
 
-        print("Sync Completed.")
         browser.close()
 
 if __name__ == "__main__":
