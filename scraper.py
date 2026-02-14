@@ -181,8 +181,23 @@ def run_sync():
     with sync_playwright() as p:
         # Set HEADLESS=false to see the browser when debugging locally
         headless = os.environ.get("HEADLESS", "true").lower() in ("1", "true", "yes")
-        browser = p.chromium.launch(headless=headless)
-        page = browser.new_page(viewport={"width": 1280, "height": 800})
+        browser = p.chromium.launch(
+            headless=headless,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--disable-dev-shm-usage",
+                "--no-sandbox",
+            ],
+        )
+        context = browser.new_context(
+            viewport={"width": 1280, "height": 800},
+            user_agent=(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            ),
+            ignore_https_errors=True,
+        )
+        page = context.new_page()
         page.set_default_timeout(ELEMENT_WAIT_TIMEOUT)
 
         try:
@@ -190,7 +205,7 @@ def run_sync():
             print("Opening NGTeco Portal...")
             page.goto(
                 "https://office.ngteco.com/login",
-                wait_until="domcontentloaded",
+                wait_until="load",
                 timeout=PAGE_LOAD_TIMEOUT,
             )
 
