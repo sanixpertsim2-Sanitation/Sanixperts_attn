@@ -141,10 +141,8 @@ def run_sync():
         # Set HEADLESS=false to see the browser when debugging locally
         headless = os.environ.get("HEADLESS", "true").lower() in ("1", "true", "yes")
         browser = p.chromium.launch(headless=headless)
-        page = browser.new_page(
-            viewport={"width": 1280, "height": 800},
-            default_timeout=ELEMENT_WAIT_TIMEOUT,
-        )
+        page = browser.new_page(viewport={"width": 1280, "height": 800})
+        page.set_default_timeout(ELEMENT_WAIT_TIMEOUT)
 
         try:
             # --- 1. LOGIN FLOW ---
