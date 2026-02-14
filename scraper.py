@@ -3,6 +3,7 @@ NGTeco Office Portal → Google Sheets Payroll Sync
 Scrapes 'Total Time(h)' from NGTeco and syncs to the IM2 Payroll sheet.
 """
 import os
+from urllib.parse import urlparse
 
 try:
     from dotenv import load_dotenv
@@ -270,14 +271,25 @@ def run_sync():
                 "--no-sandbox",
             ],
         )
-        context = browser.new_context(
-            viewport={"width": 1280, "height": 800},
-            user_agent=(
+        context_options = {
+            "viewport": {"width": 1280, "height": 800},
+            "user_agent": (
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                 "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             ),
-            ignore_https_errors=True,
-        )
+            "ignore_https_errors": True,
+        }
+        proxy_url = os.environ.get("PROXY_URL")
+        if proxy_url:
+            parsed = urlparse(proxy_url)
+            port = parsed.port or (443 if parsed.scheme == "https" else 80)
+            proxy = {"server": f"{parsed.scheme or 'http'}://{parsed.hostname}:{port}"}
+            if parsed.username and parsed.password:
+                proxy["username"] = parsed.username
+                proxy["password"] = parsed.password
+            context_options["proxy"] = proxy
+            print("Using proxy for NGTeco (bypass data-center block)")
+        context = browser.new_context(**context_options)
         page = context.new_page()
         page.set_default_timeout(ELEMENT_WAIT_TIMEOUT)
 
