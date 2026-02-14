@@ -9,7 +9,6 @@ def run_sync():
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     client = gspread.authorize(creds)
     
-    # Target Sheet
     spreadsheet = client.open("IM2 Payroll January 26 - February 8 2026") 
     sheet = spreadsheet.worksheet("PAYROLL") 
 
@@ -19,56 +18,66 @@ def run_sync():
         page = context.new_page()
         
         print("Opening NGTeco Portal...")
-        page.goto("https://office.ngteco.com/login", wait_until="networkidle")
-        time.sleep(5) # Critical wait for the portal to load the anonymous fields
+        page.goto("https://office.ngteco.com/login", wait_until="load", timeout=60000)
+        
+        # Give the portal extra time for the login modal to pop up
+        print("Waiting for portal elements to settle...")
+        time.sleep(10)
 
-        # --- STEP 1: CLICK THE ANONYMOUS CHECKBOX ---
-        print("Checking for the agreement box...")
+        # --- STEP 1: DYNAMIC CHECKBOX DETECTION ---
+        print("Scanning for agreement checkbox...")
         try:
-            # We look for the only checkbox on the page since it has no ID/Name
-            page.locator('input[type="checkbox"]').first.click(force=True)
-            print("Checkbox clicked.")
-        except:
-            print("Could not find checkbox by type, trying text click...")
-            page.get_by_text("I have read").click(force=True)
+            # Look for ANY checkbox or agreement text and click it
+            # We use a broad selector here to find hidden Ant-Design checkboxes
+            checkbox_selectors = [
+                'input[type="checkbox"]',
+                '.ant-checkbox-input',
+                '.ant-checkbox',
+                'text="I have read"',
+                'text="agree"'
+            ]
+            
+            for selector in checkbox_selectors:
+                el = page.locator(selector).first
+                if el.is_visible():
+                    el.click(force=True)
+                    print(f"Successfully triggered via: {selector}")
+                    break
+        except Exception as e:
+            print(f"Checkbox detection skipped: {e}")
 
-        time.sleep(2)
+        time.sleep(3)
 
-        # --- STEP 2: FILL ANONYMOUS LOGIN FIELDS ---
-        print("Attempting to fill anonymous fields...")
+        # --- STEP 2: ANONYMOUS FIELD FILLING ---
+        print("Filling credentials...")
         try:
-            # Find all input elements
-            inputs = page.locator('input').all()
+            # Since fields have no IDs/Names, we use the input type or order
+            # The first non-checkbox input is usually the username
+            page.locator('input:not([type="checkbox"])').nth(0).fill(os.environ["NGTECO_USER"])
+            # The password field is almost always type="password"
+            page.locator('input[type="password"]').fill(os.environ["NGTECO_PASS"])
             
-            # Usually: Input 0 = Checkbox, Input 1 = Username, Input 2 = Password
-            # We will use 'filter' to be safer
-            username_field = page.locator('input:not([type="checkbox"]):not([type="password"])').first
-            password_field = page.locator('input[type="password"]').first
-            
-            username_field.fill(os.environ["NGTECO_USER"])
-            password_field.fill(os.environ["NGTECO_PASS"])
-            
-            print("Credentials entered.")
-            
-            # Find the button that isn't a checkbox
+            # Click the main button (Login)
             page.locator('button[type="submit"], button:has-text("Login")').click()
             print("Login submitted.")
         except Exception as e:
-            print(f"Failed to handle anonymous fields: {e}")
+            print(f"Fill failed: {e}")
             return
 
-        # --- STEP 3: SYNC DATA ---
+        # --- STEP 3: SYNC ---
         page.wait_for_load_state("networkidle")
         time.sleep(5)
         print("Navigating to Time Cards...")
         page.goto("https://office.ngteco.com/att/timecard/timecard")
-        page.wait_for_selector("table", timeout=30000)
+        page.wait_for_selector("table", timeout=45000)
 
+        # Fetch names and dates from your specific worksheet structure
         all_names = [n.strip() for n in sheet.col_values(2)] 
         date_headers = sheet.row_values(3)[4:19] 
 
         rows = page.query_selector_all("tr.ant-table-row")
-        
+        print(f"Found {len(rows)} rows on portal. Matching to Google Sheet...")
+
         for row in rows:
             cols = row.query_selector_all("td")
             if len(cols) < 5: continue
@@ -85,10 +94,11 @@ def run_sync():
                     row_idx = all_names.index(p_name) + 1
                     col_idx = date_headers.index(day_key) + 5
                     sheet.update_cell(row_idx, col_idx, total_h)
-                    print(f"SUCCESS: {p_name} | Day {day_key}")
+                    print(f"UPDATED: {p_name} | Day {day_key} | {total_h}h")
             except:
                 continue
 
+        print("Sync finished.")
         browser.close()
 
 if __name__ == "__main__":
