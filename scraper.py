@@ -114,7 +114,7 @@ def _fill_login_resilient(page, username: str, password: str):
         if _fill_login_via_js(page, username, password):
             print("  ✓ Login filled and submitted via JavaScript")
             return
-        for frame in page.frames():
+        for frame in page.frames:
             if frame != page.main_frame and _fill_login_via_js(page, username, password, frame):
                 print("  ✓ Login filled via JavaScript (iframe)")
                 return
