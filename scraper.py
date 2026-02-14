@@ -20,7 +20,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 PAGE_LOAD_TIMEOUT = 60000
 ELEMENT_WAIT_TIMEOUT = 30000
 INITIAL_RENDER_WAIT = 20  # seconds for JS to render anonymous form
-POST_CHECKBOX_WAIT = 5
+POST_CHECKBOX_WAIT = 10  # Form may load slowly after checkbox
 POST_LOGIN_WAIT = 5
 
 
@@ -78,12 +78,14 @@ def _click_checkbox_resilient(page):
     return False
 
 
-def _fill_login_via_js(page, username: str, password: str) -> bool:
-    """Fill and submit login form entirely via JavaScript. Returns True if successful."""
+def _fill_login_via_js(page, username: str, password: str, frame=None) -> bool:
+    """Fill and submit login form via JavaScript. Try frame or main page."""
+    target = frame if frame else page
     try:
-        result = page.evaluate(
+        result = target.evaluate(
             """([user, passw]) => {
-                const inputs = Array.from(document.querySelectorAll('input'));
+                const doc = document;
+                const inputs = Array.from(doc.querySelectorAll('input'));
                 const textInput = inputs.find(i => i.type !== 'checkbox' && i.type !== 'password');
                 const passInput = inputs.find(i => i.type === 'password');
                 if (!textInput || !passInput) return false;
@@ -91,7 +93,7 @@ def _fill_login_via_js(page, username: str, password: str) -> bool:
                 textInput.dispatchEvent(new Event('input', { bubbles: true }));
                 passInput.value = passw;
                 passInput.dispatchEvent(new Event('input', { bubbles: true }));
-                const btn = document.querySelector('button[type="submit"]') || document.querySelector('.ant-btn-primary') || document.querySelector('button.ant-btn');
+                const btn = doc.querySelector('button[type="submit"]') || doc.querySelector('.ant-btn-primary') || doc.querySelector('button.ant-btn');
                 if (btn) { btn.click(); return true; }
                 return false;
             }""",
@@ -107,12 +109,16 @@ def _fill_login_resilient(page, username: str, password: str):
     Fill username and password using type-based selectors.
     Username = first visible text input (not checkbox, not password).
     """
-    # Try JS fill first when inputs may exist but not be "visible" to Playwright
-    for attempt in range(3):
+    # Try JS fill first - main page and all iframes (form may be in iframe)
+    for attempt in range(4):
         if _fill_login_via_js(page, username, password):
             print("  ✓ Login filled and submitted via JavaScript")
             return
-        time.sleep(3)  # Form may need a moment to render after checkbox
+        for frame in page.frames():
+            if frame != page.main_frame and _fill_login_via_js(page, username, password, frame):
+                print("  ✓ Login filled via JavaScript (iframe)")
+                return
+        time.sleep(4)  # Form may need a moment to render after checkbox
 
     # Wait for any non-checkbox, non-password input (try "attached" - may exist but hidden)
     input_selectors = [
@@ -130,6 +136,20 @@ def _fill_login_resilient(page, username: str, password: str):
         except Exception:
             continue
     if not input_found:
+        # Debug: log what's on the page
+        try:
+            info = page.evaluate("""() => ({
+                inputCount: document.querySelectorAll('input').length,
+                iframeCount: document.querySelectorAll('iframe').length,
+                bodyText: document.body?.innerText?.slice(0, 200) || ''
+            })""")
+            print(f"  Debug: inputs={info.get('inputCount', 0)}, iframes={info.get('iframeCount', 0)}")
+            html = page.content()
+            with open("scraper_page.html", "w", encoding="utf-8") as f:
+                f.write(html)
+            print("  Debug: saved scraper_page.html")
+        except Exception as e:
+            print(f"  Debug save failed: {e}")
         raise RuntimeError("Login form inputs never became visible")
 
     # Username: first non-checkbox, non-password input
@@ -248,6 +268,10 @@ def run_sync():
             print("Looking for agreement checkbox...")
             _click_checkbox_resilient(page)
             time.sleep(POST_CHECKBOX_WAIT)
+            try:
+                page.wait_for_load_state("networkidle", timeout=15000)
+            except Exception:
+                pass
 
             # Fill credentials (JS-first: inputs may exist but not be "visible" to Playwright)
             print("Filling credentials...")

@@ -28,4 +28,5 @@ jobs:
           path: |
             scraper_timeout.png
             scraper_error.png
+            scraper_page.html
           if-no-files-found: ignore
