@@ -3,60 +3,66 @@ from playwright.sync_api import sync_playwright
 from oauth2client.service_account import ServiceAccountCredentials
 
 def run_sync():
-    # 1. AUTHENTICATION & SHEET ACCESS
+    # 1. AUTHENTICATION
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     creds_dict = json.loads(os.environ["GOOGLE_SHEETS_JSON"])
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     client = gspread.authorize(creds)
     
-    # Verify this matches your Google Sheet filename
+    # Matches your filename exactly
     spreadsheet = client.open("IM2 Payroll January 26 - February 8 2026") 
     sheet = spreadsheet.worksheet("PAYROLL") 
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        context = browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        )
+        # Standard desktop view
+        context = browser.new_context(viewport={'width': 1280, 'height': 800})
         page = context.new_page()
         
         print("Opening NGTeco Portal...")
         page.goto("https://office.ngteco.com/login", wait_until="networkidle")
-        
-        # --- ENHANCED CHECKBOX LOGIC ---
-        print("Attempting to acknowledge terms...")
+        time.sleep(3) # Wait for elements to settle
+
+        # --- FORCE CLICK CHECKBOX ---
+        print("Forcing agreement checkbox click...")
         try:
-            # Try finding the checkbox input directly and forcing a check
-            checkbox = page.locator('input[type="checkbox"], .ant-checkbox-input').first
-            checkbox.wait_for(state="attached", timeout=5000)
-            checkbox.check(force=True)
-            print("Checkbox checked via direct input.")
+            # Try to click the actual text 'I have read' which is usually linked to the box
+            agreement_text = page.get_by_text("I have read and agree")
+            agreement_text.click(force=True)
+            print("Agreement text clicked.")
         except:
+            # Fallback: find any checkbox and click it
             try:
-                # If direct check fails, click the wrapper or text
-                page.locator('.ant-checkbox').click()
-                print("Checkbox clicked via wrapper.")
+                page.locator('input[type="checkbox"]').first.click(force=True)
+                print("Checkbox clicked via locator.")
             except:
-                print("Could not find checkbox, moving to credentials...")
+                print("Warning: Could not confirm checkbox click.")
 
-        page.wait_for_timeout(1000)
+        time.sleep(2) # Give the portal a moment to enable the inputs
 
-        # --- LOGIN ---
+        # --- FILL LOGIN ---
         print("Filling credentials...")
         try:
-            page.get_by_placeholder("Username").or_(page.locator('input[name="username"]')).fill(os.environ["NGTECO_USER"])
-            page.get_by_placeholder("Password").or_(page.locator('input[name="password"]')).fill(os.environ["NGTECO_PASS"])
-            page.get_by_role("button", name="Login").click()
-            page.wait_for_load_state("networkidle")
-            print("Login successful.")
+            # We use a very broad selector to find the username field
+            page.locator('input').first.fill(os.environ["NGTECO_USER"])
+            # Second input is usually password
+            page.locator('input[type="password"]').fill(os.environ["NGTECO_PASS"])
+            
+            # Click Login Button
+            page.get_by_role("button").filter(has_text="Login").click()
+            print("Login button clicked. Waiting for dashboard...")
         except Exception as e:
-            print(f"Login failed: {e}")
+            print(f"Failed to fill fields: {e}")
             return
 
         # --- NAVIGATION ---
+        page.wait_for_load_state("networkidle")
         print("Navigating to Time Card Management...")
         page.goto("https://office.ngteco.com/att/timecard/timecard")
-        page.wait_for_selector("table", timeout=20000)
+        
+        # Wait for the data table to load
+        page.wait_for_selector("table", timeout=30000)
+        print("Timecard table found. Starting Sync...")
 
         # --- DATA SYNC ---
         all_names = [n.strip() for n in sheet.col_values(2)] 
@@ -84,10 +90,11 @@ def run_sync():
                     row_idx = all_names.index(p_name) + 1
                     col_idx = date_headers.index(day_key) + 5
                     sheet.update_cell(row_idx, col_idx, total_h)
-                    print(f"Updated: {p_name} on Day {day_key}")
+                    print(f"SUCCESS: {p_name} | Day {day_key} | {total_h}h")
             except:
                 continue
 
+        print("Sync Completed.")
         browser.close()
 
 if __name__ == "__main__":
