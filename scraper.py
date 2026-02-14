@@ -16,11 +16,11 @@ import time
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
 from oauth2client.service_account import ServiceAccountCredentials
 
-# Timeouts (ms) - portal is slow to render
+# Timeouts (ms) - portal is slow to render, CI is slower than local
 PAGE_LOAD_TIMEOUT = 60000
-ELEMENT_WAIT_TIMEOUT = 15000
-INITIAL_RENDER_WAIT = 12  # seconds for JS to render anonymous form
-POST_CHECKBOX_WAIT = 3
+ELEMENT_WAIT_TIMEOUT = 30000
+INITIAL_RENDER_WAIT = 20  # seconds for JS to render anonymous form
+POST_CHECKBOX_WAIT = 5
 POST_LOGIN_WAIT = 5
 
 
@@ -29,6 +29,17 @@ def _click_checkbox_resilient(page):
     Try multiple strategies to click the 'I have read and agree' checkbox.
     The portal uses anonymous Ant Design elements without IDs/names.
     """
+    # Try JavaScript first (works even when checkbox is hidden/styled)
+    try:
+        page.evaluate("""() => {
+            const cb = document.querySelector('input[type="checkbox"]');
+            if (cb && !cb.checked) cb.click();
+        }""")
+        print("  ✓ Checkbox toggled via JavaScript")
+        return True
+    except Exception as e:
+        print(f"  ✗ JavaScript checkbox: {e}")
+
     strategies = [
         # Ant Design checkbox (often hidden, wrapped in .ant-checkbox)
         ('.ant-checkbox-input', "Ant Design checkbox input"),
@@ -51,11 +62,11 @@ def _click_checkbox_resilient(page):
             print(f"  ✗ {desc}: {type(e).__name__}")
             continue
 
-    # Fallback: try keyboard navigation (Tab to focus, Space to toggle)
+    # Fallback: keyboard navigation
     try:
         page.keyboard.press("Tab")
         time.sleep(0.5)
-        for _ in range(5):
+        for _ in range(10):
             page.keyboard.press("Tab")
             time.sleep(0.3)
         page.keyboard.press("Space")
@@ -72,16 +83,28 @@ def _fill_login_resilient(page, username: str, password: str):
     Fill username and password using type-based selectors.
     Username = first visible text input (not checkbox, not password).
     """
-    # Wait for at least one input to be visible
-    page.wait_for_selector(
-        'input[type="text"], input:not([type="password"]):not([type="checkbox"])',
-        timeout=ELEMENT_WAIT_TIMEOUT,
-        state="visible",
-    )
+    # Wait for any non-checkbox, non-password input (broader selector)
+    input_selectors = [
+        'input[type="text"]',
+        'input[type="email"]',
+        'input:not([type="password"]):not([type="checkbox"])',
+        'input',  # fallback: any input, use nth to skip checkbox
+    ]
+    input_found = False
+    for sel in input_selectors:
+        try:
+            page.wait_for_selector(sel, timeout=10000, state="visible")
+            input_found = True
+            break
+        except Exception:
+            continue
+    if not input_found:
+        raise RuntimeError("Login form inputs never became visible")
 
     # Username: first non-checkbox, non-password input
     user_selectors = [
         'input[type="text"]',
+        'input[type="email"]',
         'input:not([type="password"]):not([type="checkbox"])',
         'input[autocomplete="username"]',
     ]
@@ -98,7 +121,25 @@ def _fill_login_resilient(page, username: str, password: str):
             continue
 
     if not filled_user:
-        raise RuntimeError("Could not fill username field")
+        # Last resort: JavaScript fill by input order
+        try:
+            user_escaped = json.dumps(username)
+            page.evaluate(
+                f"""() => {{
+                    const inputs = Array.from(document.querySelectorAll('input')).filter(
+                        i => i.type !== 'checkbox' && i.type !== 'password'
+                    );
+                    if (inputs[0]) {{
+                        inputs[0].value = {user_escaped};
+                        inputs[0].dispatchEvent(new Event('input', {{ bubbles: true }}));
+                    }}
+                }}"""
+            )
+            filled_user = True
+            print("  ✓ Username filled via JavaScript")
+        except Exception as e:
+            print(f"  JS username fallback failed: {e}")
+            raise RuntimeError("Could not fill username field")
 
     # Password
     page.locator('input[type="password"]').first.wait_for(state="visible", timeout=5000)
@@ -155,6 +196,7 @@ def run_sync():
 
             print("Waiting for portal JS to render...")
             time.sleep(INITIAL_RENDER_WAIT)
+            page.wait_for_load_state("networkidle", timeout=30000)
 
             # Checkbox (required before fields become interactable)
             print("Looking for agreement checkbox...")
