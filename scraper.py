@@ -78,22 +78,53 @@ def _click_checkbox_resilient(page):
     return False
 
 
+def _fill_login_via_js(page, username: str, password: str) -> bool:
+    """Fill and submit login form entirely via JavaScript. Returns True if successful."""
+    try:
+        result = page.evaluate(
+            """([user, passw]) => {
+                const inputs = Array.from(document.querySelectorAll('input'));
+                const textInput = inputs.find(i => i.type !== 'checkbox' && i.type !== 'password');
+                const passInput = inputs.find(i => i.type === 'password');
+                if (!textInput || !passInput) return false;
+                textInput.value = user;
+                textInput.dispatchEvent(new Event('input', { bubbles: true }));
+                passInput.value = passw;
+                passInput.dispatchEvent(new Event('input', { bubbles: true }));
+                const btn = document.querySelector('button[type="submit"]') || document.querySelector('.ant-btn-primary') || document.querySelector('button.ant-btn');
+                if (btn) { btn.click(); return true; }
+                return false;
+            }""",
+            [username, password],
+        )
+        return bool(result)
+    except Exception:
+        return False
+
+
 def _fill_login_resilient(page, username: str, password: str):
     """
     Fill username and password using type-based selectors.
     Username = first visible text input (not checkbox, not password).
     """
-    # Wait for any non-checkbox, non-password input (broader selector)
+    # Try JS fill first when inputs may exist but not be "visible" to Playwright
+    for attempt in range(3):
+        if _fill_login_via_js(page, username, password):
+            print("  ✓ Login filled and submitted via JavaScript")
+            return
+        time.sleep(3)  # Form may need a moment to render after checkbox
+
+    # Wait for any non-checkbox, non-password input (try "attached" - may exist but hidden)
     input_selectors = [
         'input[type="text"]',
         'input[type="email"]',
         'input:not([type="password"]):not([type="checkbox"])',
-        'input',  # fallback: any input, use nth to skip checkbox
+        'input',
     ]
     input_found = False
     for sel in input_selectors:
         try:
-            page.wait_for_selector(sel, timeout=10000, state="visible")
+            page.wait_for_selector(sel, timeout=10000, state="attached")
             input_found = True
             break
         except Exception:
@@ -218,7 +249,7 @@ def run_sync():
             _click_checkbox_resilient(page)
             time.sleep(POST_CHECKBOX_WAIT)
 
-            # Fill credentials
+            # Fill credentials (JS-first: inputs may exist but not be "visible" to Playwright)
             print("Filling credentials...")
             _fill_login_resilient(
                 page,
