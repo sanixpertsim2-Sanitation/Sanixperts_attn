@@ -9,69 +9,85 @@ def run_sync():
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     client = gspread.authorize(creds)
     
-    # Change this to match your EXACT Google Sheet filename
+    # Using the name from your uploaded file
     spreadsheet = client.open("IM2 Payroll January 26 - February 8 2026") 
     sheet = spreadsheet.worksheet("PAYROLL") 
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
+        # Set a standard desktop user agent to avoid being blocked
+        context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36")
+        page = context.new_page()
         
-        print("Logging in to NGTeco...")
-        page.goto("https://office.ngteco.com/login")
+        print("Opening NGTeco Portal...")
+        page.goto("https://office.ngteco.com/login", wait_until="networkidle")
         
-        # Handle the 'I have read' checkbox
+        # --- IMPROVED LOGIN LOGIC ---
+        # 1. Deal with the Checkbox (try multiple selectors)
         try:
-            page.wait_for_selector('.ant-checkbox-input', timeout=5000)
-            page.click('.ant-checkbox-input')
+            print("Looking for acknowledgment checkbox...")
+            page.wait_for_selector('input[type="checkbox"], .ant-checkbox-input', timeout=10000)
+            page.click('input[type="checkbox"], .ant-checkbox-input')
+            print("Checkbox clicked.")
         except:
-            print("Checkbox not found, continuing...")
+            print("Checkbox not found or already active.")
 
-        page.fill('input[name="username"]', os.environ["NGTECO_USER"])
-        page.fill('input[name="password"]', os.environ["NGTECO_PASS"])
+        # 2. Fill Username (try name, placeholder, and id)
+        print("Filling credentials...")
+        try:
+            # Wait specifically for any input that looks like a username
+            user_input = page.wait_for_selector('input[name="username"], input[placeholder*="Username"], input[placeholder*="Email"]', timeout=15000)
+            user_input.fill(os.environ["NGTECO_USER"])
+            
+            # Wait for password
+            pass_input = page.wait_for_selector('input[name="password"], input[type="password"]', timeout=5000)
+            pass_input.fill(os.environ["NGTECO_PASS"])
+        except Exception as e:
+            print(f"Login fields not found: {e}")
+            page.screenshot(path="login_error.png") # This helps debug in GitHub
+            raise e
+
+        # 3. Click Submit
         page.click('button[type="submit"]')
         page.wait_for_load_state("networkidle")
 
-        # Go to the specific Time Card page
+        # 4. Navigate to Time Card
+        print("Navigating to Time Card Management...")
         page.goto("https://office.ngteco.com/att/timecard/timecard")
         page.wait_for_selector("table", timeout=20000)
 
-        # 2. MATCHING LOGIC
-        # Column B (index 2) has names. Row 3 (index 3) has dates.
-        all_names = [n.strip() for n in sheet.col_values(2)] # Column B
-        date_headers = sheet.row_values(3)[4:19] # Row 3, Columns E through S (26th to 8th)
+        # 5. DATA MAPPING (Matches your CSV structure)
+        all_names = [n.strip() for n in sheet.col_values(2)] # Col B
+        date_headers = sheet.row_values(3)[4:19] # Row 3, Col E-S
 
         rows = page.query_selector_all("tr.ant-table-row")
-        
+        print(f"Syncing {len(rows)} portal entries to Google Sheets...")
+
         for row in rows:
             cols = row.query_selector_all("td")
             if len(cols) < 5: continue
             
-            portal_name = cols[1].inner_text().strip()
-            punch_in = cols[2].inner_text().strip()   # Clock In
-            punch_out = cols[3].inner_text().strip()  # Clock Out
-            total_h = cols[4].inner_text().strip()    # Total Time(h) column
+            p_name = cols[1].inner_text().strip()
+            p_in = cols[2].inner_text().strip()
+            p_out = cols[3].inner_text().strip()
+            total_h = cols[4].inner_text().strip()
 
-            # RULE: Ignore if they haven't clocked out yet
-            if not punch_out or any(x in punch_out.lower() for x in ["n/a", "working", "--"]):
+            if not p_out or any(x in p_out.lower() for x in ["n/a", "working", "--"]):
                 continue
 
             try:
-                # Use Clock-In Date for Night Shift Anchor
-                punch_date = datetime.datetime.strptime(punch_in, "%Y-%m-%d %H:%M:%S")
-                day_num = str(punch_date.day)
+                # Night shift anchor logic
+                p_dt = datetime.datetime.strptime(p_in, "%Y-%m-%d %H:%M:%S")
+                day_key = str(p_dt.day)
 
-                if portal_name in all_names and day_num in date_headers:
-                    # gspread is 1-indexed
-                    row_idx = all_names.index(portal_name) + 1
-                    # Start at Column E (5th column)
-                    col_idx = date_headers.index(day_num) + 5
+                if p_name in all_names and day_key in date_headers:
+                    r_idx = all_names.index(p_name) + 1
+                    c_idx = date_headers.index(day_key) + 5
                     
-                    # Update cell with Total Time(h)
-                    sheet.update_cell(row_idx, col_idx, total_h)
-                    print(f"Update Success: {portal_name} | Day {day_num} | {total_h} hrs")
+                    sheet.update_cell(r_idx, c_idx, total_h)
+                    print(f"Matched: {p_name} | Day: {day_key} | Hrs: {total_h}")
             except Exception as e:
-                print(f"Error for {portal_name}: {e}")
+                pass
 
         browser.close()
 
