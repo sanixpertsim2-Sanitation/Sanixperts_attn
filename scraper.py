@@ -29,10 +29,21 @@ def _click_checkbox_resilient(page):
     Try multiple strategies to click the 'I have read and agree' checkbox.
     The portal uses anonymous Ant Design elements without IDs/names.
     """
-    # Try JavaScript first (works even when checkbox is hidden/styled)
+    # Try JavaScript first (works even when checkbox is hidden/styled, incl. shadow DOM)
     try:
         page.evaluate("""() => {
-            const cb = document.querySelector('input[type="checkbox"]');
+            function findCheckbox(root) {
+                const cb = root.querySelector('input[type="checkbox"]');
+                if (cb) return cb;
+                for (const el of root.querySelectorAll('*')) {
+                    if (el.shadowRoot) {
+                        const found = findCheckbox(el.shadowRoot);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            }
+            const cb = findCheckbox(document);
             if (cb && !cb.checked) cb.click();
         }""")
         print("  ✓ Checkbox toggled via JavaScript")
@@ -79,13 +90,22 @@ def _click_checkbox_resilient(page):
 
 
 def _fill_login_via_js(page, username: str, password: str, frame=None) -> bool:
-    """Fill and submit login form via JavaScript. Try frame or main page."""
+    """Fill and submit login form via JavaScript. Searches document + shadow DOM."""
     target = frame if frame else page
     try:
         result = target.evaluate(
             """([user, passw]) => {
-                const doc = document;
-                const inputs = Array.from(doc.querySelectorAll('input'));
+                function findInputs(root) {
+                    const inputs = Array.from(root.querySelectorAll('input'));
+                    const elements = root.querySelectorAll('*');
+                    for (const el of elements) {
+                        if (el.shadowRoot) {
+                            inputs.push(...findInputs(el.shadowRoot));
+                        }
+                    }
+                    return inputs;
+                }
+                const inputs = findInputs(document);
                 const textInput = inputs.find(i => i.type !== 'checkbox' && i.type !== 'password');
                 const passInput = inputs.find(i => i.type === 'password');
                 if (!textInput || !passInput) return false;
@@ -93,7 +113,7 @@ def _fill_login_via_js(page, username: str, password: str, frame=None) -> bool:
                 textInput.dispatchEvent(new Event('input', { bubbles: true }));
                 passInput.value = passw;
                 passInput.dispatchEvent(new Event('input', { bubbles: true }));
-                const btn = doc.querySelector('button[type="submit"]') || doc.querySelector('.ant-btn-primary') || doc.querySelector('button.ant-btn');
+                const btn = document.querySelector('button[type="submit"]') || document.querySelector('.ant-btn-primary') || document.querySelector('button.ant-btn');
                 if (btn) { btn.click(); return true; }
                 return false;
             }""",
@@ -138,12 +158,22 @@ def _fill_login_resilient(page, username: str, password: str):
     if not input_found:
         # Debug: log what's on the page
         try:
-            info = page.evaluate("""() => ({
-                inputCount: document.querySelectorAll('input').length,
-                iframeCount: document.querySelectorAll('iframe').length,
-                bodyText: document.body?.innerText?.slice(0, 200) || ''
-            })""")
-            print(f"  Debug: inputs={info.get('inputCount', 0)}, iframes={info.get('iframeCount', 0)}")
+            info = page.evaluate("""() => {
+                function findInputs(root) {
+                    let inputs = Array.from(root.querySelectorAll('input'));
+                    root.querySelectorAll('*').forEach(el => {
+                        if (el.shadowRoot) inputs = inputs.concat(findInputs(el.shadowRoot));
+                    });
+                    return inputs;
+                }
+                return {
+                    inputCount: findInputs(document).length,
+                    iframeCount: document.querySelectorAll('iframe').length,
+                    bodyText: document.body?.innerText?.slice(0, 300) || ''
+                };
+            }""")
+            body_preview = (info.get("bodyText") or "")[:150].replace("\n", " ")
+            print(f"  Debug: inputs={info.get('inputCount', 0)}, iframes={info.get('iframeCount', 0)}, body={repr(body_preview)}")
             html = page.content()
             with open("scraper_page.html", "w", encoding="utf-8") as f:
                 f.write(html)
