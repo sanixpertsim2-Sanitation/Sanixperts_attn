@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# NGTeco Payroll Sync
 
-## Getting Started
+Automates syncing employee work hours from the [NGTeco Office Portal](https://office.ngteco.com) to a Google Sheet payroll template.
 
-First, run the development server:
+## Setup
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   playwright install chromium
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Configure credentials** – copy `.env.example` to `.env` and fill in:
+   - `NGTECO_USER` – NGTeco portal username
+   - `NGTECO_PASS` – NGTeco portal password
+   - `GOOGLE_SHEETS_JSON` – Google service account JSON (full object as string)
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+3. **Run locally**
+   ```bash
+   python scraper.py
+   ```
+   For visible browser: `HEADLESS=false python scraper.py`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## GitHub Actions
 
-## Learn More
+The workflow runs on push to `main`, hourly, and manual trigger. Add these **secrets** in repo Settings → Secrets:
 
-To learn more about Next.js, take a look at the following resources:
+- `NGTECO_USER`
+- `NGTECO_PASS`
+- `GOOGLE_SHEETS_JSON`
+- `PROXY_URL` (optional) – residential proxy URL if NGTeco blocks GitHub’s IPs
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Google Sheet
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Spreadsheet:** IM2 Payroll January 26 - February 8 2026
+- **Worksheet:** PAYROLL
+- **Layout:** Row 3 = days, Column B = employee names
