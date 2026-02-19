@@ -47,10 +47,10 @@ def _click_checkbox_resilient(page):
             const cb = findCheckbox(document);
             if (cb && !cb.checked) cb.click();
         }""")
-        print("  ✓ Checkbox toggled via JavaScript")
+        print("  [OK] Checkbox toggled via JavaScript")
         return True
     except Exception as e:
-        print(f"  ✗ JavaScript checkbox: {e}")
+        print(f"  [X] JavaScript checkbox: {e}")
 
     strategies = [
         ('.ant-checkbox-input', "Ant Design checkbox input"),
@@ -66,10 +66,10 @@ def _click_checkbox_resilient(page):
             loc = page.locator(selector).first
             loc.wait_for(state="attached", timeout=5000)
             loc.click(force=True, timeout=5000)
-            print(f"  ✓ Checkbox clicked via: {desc}")
+            print(f"  [OK] Checkbox clicked via: {desc}")
             return True
         except Exception as e:
-            print(f"  ✗ {desc}: {type(e).__name__}")
+            print(f"  [X] {desc}: {type(e).__name__}")
             continue
 
     try:
@@ -79,10 +79,10 @@ def _click_checkbox_resilient(page):
             page.keyboard.press("Tab")
             time.sleep(0.3)
         page.keyboard.press("Space")
-        print("  ✓ Checkbox toggled via keyboard")
+        print("  [OK] Checkbox toggled via keyboard")
         return True
     except Exception as e:
-        print(f"  ✗ Keyboard fallback: {e}")
+        print(f"  [X] Keyboard fallback: {e}")
 
     return False
 
@@ -126,11 +126,11 @@ def _fill_login_resilient(page, username: str, password: str):
     """Fill username and password using type-based selectors."""
     for attempt in range(4):
         if _fill_login_via_js(page, username, password):
-            print("  ✓ Login filled and submitted via JavaScript")
+            print("  [OK] Login filled and submitted via JavaScript")
             return
         for frame in page.frames:
             if frame != page.main_frame and _fill_login_via_js(page, username, password, frame):
-                print("  ✓ Login filled via JavaScript (iframe)")
+                print("  [OK] Login filled via JavaScript (iframe)")
                 return
         time.sleep(4)
 
@@ -187,7 +187,7 @@ def _fill_login_resilient(page, username: str, password: str):
             loc.wait_for(state="visible", timeout=5000)
             loc.fill(username, timeout=5000)
             filled_user = True
-            print("  ✓ Username filled")
+            print("  [OK] Username filled")
             break
         except Exception:
             continue
@@ -207,14 +207,14 @@ def _fill_login_resilient(page, username: str, password: str):
                 }}"""
             )
             filled_user = True
-            print("  ✓ Username filled via JavaScript")
+            print("  [OK] Username filled via JavaScript")
         except Exception as e:
             print(f"  JS username fallback failed: {e}")
             raise RuntimeError("Could not fill username field")
 
     page.locator('input[type="password"]').first.wait_for(state="visible", timeout=5000)
     page.locator('input[type="password"]').first.fill(password, timeout=5000)
-    print("  ✓ Password filled")
+    print("  [OK] Password filled")
 
     submit_selectors = [
         'button[type="submit"]',
@@ -229,7 +229,7 @@ def _fill_login_resilient(page, username: str, password: str):
             loc = page.locator(sel).first
             loc.wait_for(state="visible", timeout=5000)
             loc.click(timeout=5000)
-            print("  ✓ Login submitted")
+            print("  [OK] Login submitted")
             return
         except Exception:
             continue
@@ -241,7 +241,12 @@ def run_sync():
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/drive",
     ]
-    creds_dict = json.loads(os.environ["GOOGLE_SHEETS_JSON"])
+    json_path = os.environ.get("GOOGLE_SHEETS_JSON_PATH")
+    if json_path:
+        with open(json_path, "r", encoding="utf-8") as f:
+            creds_dict = json.load(f)
+    else:
+        creds_dict = json.loads(os.environ["GOOGLE_SHEETS_JSON"])
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     client = gspread.authorize(creds)
     sheet = client.open("IM2 Payroll January 26 - February 8 2026").worksheet("PAYROLL")
