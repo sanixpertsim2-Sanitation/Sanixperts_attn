@@ -12,6 +12,11 @@ env/
 .env
 .env.local
 
+# Credentials (never commit)
+attendance-*.json
+*-credentials.json
+ngteco_session.json
+
 # Scraper debug output
 scraper_timeout.png
 scraper_error.png

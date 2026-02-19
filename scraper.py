@@ -279,41 +279,49 @@ def run_sync():
                 proxy["password"] = parsed.password
             context_options["proxy"] = proxy
             print("Using proxy for NGTeco (bypass data-center block)")
+        session_path = os.environ.get("NGTECO_SESSION_PATH")
+        if session_path and os.path.exists(session_path):
+            context_options["storage_state"] = session_path
+            print("Using saved session (skip login)")
+
         context = browser.new_context(**context_options)
         page = context.new_page()
         page.set_default_timeout(ELEMENT_WAIT_TIMEOUT)
 
         try:
-            print("Opening NGTeco Portal...")
-            page.goto(
-                "https://office.ngteco.com/login",
-                wait_until="load",
-                timeout=PAGE_LOAD_TIMEOUT,
-            )
+            if session_path and os.path.exists(session_path):
+                print("Navigating to Time Cards (logged in via session)...")
+            else:
+                print("Opening NGTeco Portal...")
+                page.goto(
+                    "https://office.ngteco.com/login",
+                    wait_until="load",
+                    timeout=PAGE_LOAD_TIMEOUT,
+                )
 
-            print("Waiting for portal JS to render...")
-            time.sleep(INITIAL_RENDER_WAIT)
-            page.wait_for_load_state("networkidle", timeout=30000)
+                print("Waiting for portal JS to render...")
+                time.sleep(INITIAL_RENDER_WAIT)
+                page.wait_for_load_state("networkidle", timeout=30000)
 
-            print("Looking for agreement checkbox...")
-            _click_checkbox_resilient(page)
-            time.sleep(POST_CHECKBOX_WAIT)
-            try:
-                page.wait_for_load_state("networkidle", timeout=15000)
-            except Exception:
-                pass
+                print("Looking for agreement checkbox...")
+                _click_checkbox_resilient(page)
+                time.sleep(POST_CHECKBOX_WAIT)
+                try:
+                    page.wait_for_load_state("networkidle", timeout=15000)
+                except Exception:
+                    pass
 
-            print("Filling credentials...")
-            _fill_login_resilient(
-                page,
-                os.environ["NGTECO_USER"],
-                os.environ["NGTECO_PASS"],
-            )
+                print("Filling credentials...")
+                _fill_login_resilient(
+                    page,
+                    os.environ["NGTECO_USER"],
+                    os.environ["NGTECO_PASS"],
+                )
 
-            page.wait_for_load_state("networkidle", timeout=30000)
-            time.sleep(POST_LOGIN_WAIT)
+                page.wait_for_load_state("networkidle", timeout=30000)
+                time.sleep(POST_LOGIN_WAIT)
 
-            print("Navigating to Time Cards...")
+                print("Navigating to Time Cards...")
             page.goto(
                 "https://office.ngteco.com/att/timecard/timecard",
                 wait_until="domcontentloaded",

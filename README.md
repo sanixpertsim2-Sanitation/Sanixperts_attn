@@ -13,9 +13,19 @@ Automates syncing employee work hours from the [NGTeco Office Portal](https://of
 2. **Configure credentials** – copy `.env.example` to `.env` and fill in:
    - `NGTECO_USER` – NGTeco portal username
    - `NGTECO_PASS` – NGTeco portal password
-   - `GOOGLE_SHEETS_JSON` – Google service account JSON (full object as string)
+   - `GOOGLE_SHEETS_JSON` or `GOOGLE_SHEETS_JSON_PATH` – Google service account
 
-3. **Run locally**
+3. **If automated login fails** (blank page, inputs=0), use **manual login**:
+   ```bash
+   python login_manual.py
+   ```
+   Log in manually in the browser, then press Enter when you see the dashboard. This saves `ngteco_session.json`. Then run:
+   ```bash
+   NGTECO_SESSION_PATH=ngteco_session.json python scraper.py
+   ```
+   The session lasts until you log out or it expires (refresh periodically).
+
+4. **Run normally**
    ```bash
    python scraper.py
    ```
