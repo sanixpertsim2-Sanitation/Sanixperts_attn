@@ -25,3 +25,7 @@ scraper_page.html
 # Misc
 .DS_Store
 *.pem
+
+# Claude Code skills (external git repos)
+.claude/skills/
+claude-code-plugins-plus-skills/

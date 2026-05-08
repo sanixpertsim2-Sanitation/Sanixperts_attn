@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git clone *)",
+      "Bash(dir D:\\\\Sani_attn\\\\Sanixperts_attn\\\\caveman *)",
+      "Bash(dir D:\\\\Sani_attn\\\\Sanixperts_attn *)",
+      "Read(//d/app//**)",
+      "Read(//d//**)",
+      "WebFetch(domain:ais-dev-4kzvjon4fbm3f5whigcurw-685909578611.us-east1.run.app)",
+      "Bash(start *)",
+      "Bash(Get-Content \"D:\\\\Sani_attn\\\\Signatures\\\\haron_aqua.html\" -TotalCount 250)",
+      "Bash(Select-String -Pattern \"table|td|style|Best regards|font|color|background|linear-gradient|signature\")",
+      "Bash(python -c ' *)",
+      "Bash(python *)",
+      "Bash(git -C \"D:\\\\Sani_attn\\\\Sanixperts_attn\" status)",
+      "Bash(git -C \"D:\\\\Sani_attn\\\\Sanixperts_attn\" log --oneline -3)",
+      "Bash(git -C \"D:\\\\Sani_attn\\\\Signatures\" status)",
+      "Bash(git -C \"D:\\\\Sani_attn\\\\Signatures\" rev-parse --show-toplevel)",
+      "Bash(git *)",
+      "Bash(Get-Content *)",
+      "PowerShell(\\(Get-Item \"D:\\\\Sani_attn\\\\Sanixperts_attn\\\\Signatures\\\\haron_meridian.html\"\\).Length; \\(Get-Item \"D:\\\\Sani_attn\\\\Sanixperts_attn\\\\Signatures\\\\haron_slim.html\"\\).Length; \\(Get-Item \"D:\\\\Sani_attn\\\\Sanixperts_attn\\\\Signatures\\\\haron_aqua.html\"\\).Length; \\(Get-Item \"D:\\\\Sani_attn\\\\Sanixperts_attn\\\\Signatures\\\\haron_aqua_slim.txt\"\\).Length)"
+    ]
+  }
+}
