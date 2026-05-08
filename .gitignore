@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+
+# Environment
+.env
+.env.local
+
+# Credentials (never commit)
+attendance-*.json
+*-credentials.json
+ngteco_session.json
+
+# Scraper debug output
+scraper_timeout.png
+scraper_error.png
+scraper_page.html
+
+# Misc
+.DS_Store
+*.pem
