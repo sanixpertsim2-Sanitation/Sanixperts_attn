@@ -210,10 +210,12 @@ body::after{content:'';position:fixed;bottom:-250px;left:-200px;width:600px;heig
         </div>
         <div class="tpl-name">Aqua</div>
       </div>
-      <div class="tpl-card" data-t="aqua_slim" onclick="pick('aqua_slim',this)">
-        <div class="tpl-thumb" style="background:#f0f8ff;border:1px solid #d0e8f8;border-left:3px solid #29abe2;overflow:hidden;">
-          <div style="position:absolute;top:8px;left:0;right:0;height:2px;background:linear-gradient(90deg,#0d47a1,#29abe2,#0d47a1);"></div>
-          <div style="position:absolute;bottom:0;left:0;right:0;height:8px;background:linear-gradient(90deg,#0d47a1,#29abe2,#0d47a1);clip-path:ellipse(55% 100% at 50% 100%);"></div>
+      <div class="tpl-card" data-t="aquaslim" onclick="pick('aquaslim',this)">
+        <div class="tpl-thumb" style="background:#f0f8ff;border:1px solid #d0e8f8;overflow:hidden;">
+          <div style="position:absolute;top:0;left:0;width:25%;height:100%;background:linear-gradient(180deg,#e3f2fd,#bbdefb);border-right:1px solid #29abe2;display:flex;align-items:center;justify-content:center;">
+            <div style="width:18px;height:18px;border-radius:50%;background:#29abe2;border:2px solid #fff;"></div>
+          </div>
+          <div style="position:absolute;bottom:0;left:0;right:0;height:8px;background:linear-gradient(90deg,#0d47a1,#29abe2,#0d47a1);"></div>
         </div>
         <div class="tpl-name">Aqua Slim</div>
       </div>
@@ -597,8 +599,29 @@ function tplSlim(d) {
       </table>
     </td>
   </tr>
-  <!-- Slim footer bar (36px equivalent) -->
-  <tr><td style="height:8px;padding:0;font-size:0;background:linear-gradient(90deg,#00c4cc 0%,#1a73e8 40%,#0a1e3d 70%,#1a73e8 90%,#00c4cc 100%);"></td></tr>
+  <!-- SLIM WAVE FOOTER -->
+  <tr>
+    <td style="padding:0;font-size:0;line-height:0;background:#0a1e3d;">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 30" width="680" height="30" style="display:block;">
+        <defs>
+          <linearGradient id="wgsl" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#00c4cc"/>
+            <stop offset="40%" stop-color="#1a73e8"/>
+            <stop offset="70%" stop-color="#0a1e3d"/>
+            <stop offset="90%" stop-color="#1a73e8"/>
+            <stop offset="100%" stop-color="#00c4cc"/>
+          </linearGradient>
+        </defs>
+        <path d="M0,10 C60,20 120,4 180,10 C240,16 300,2 360,10 C420,18 480,4 540,10 C600,16 640,8 680,10 L680,30 L0,30 Z" fill="url(#wgsl)" opacity="0.85"/>
+        <path d="M0,16 C80,26 160,8 240,16 C320,24 400,10 480,16 C560,22 620,12 680,16 L680,30 L0,30 Z" fill="#0a1e3d" opacity="0.6"/>
+      </svg>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" style="background:#0a1e3d;padding:8px 20px 11px;">
+      <span style="font-family:Georgia,'Times New Roman',serif;font-size:10.5px;font-style:italic;color:#ffffff;letter-spacing:0.03em;">Cleaning Meets Quality. Redefined by the <b style="font-size:11.5px;font-weight:900;color:#1a73e8;">X</b>PERTS.</span>
+    </td>
+  </tr>
 </table>`;
 }
 
@@ -672,21 +695,28 @@ function tplWave(d) {
       </table>
     </td>
   </tr>
-  <!-- SVG Wave footer (54px equivalent) -->
-  <tr><td style="padding:0;font-size:0;line-height:0;">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 54" width="680" height="54" style="display:block;">
-      <defs>
-        <linearGradient id="wg" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#00c4cc"/>
-          <stop offset="35%" stop-color="#1a73e8"/>
-          <stop offset="65%" stop-color="#0a1e3d"/>
-          <stop offset="100%" stop-color="#1a73e8"/>
-        </linearGradient>
-      </defs>
-      <path d="M0,18 C60,32 120,8 180,18 C240,28 300,4 360,18 C420,32 480,8 540,18 C600,28 640,14 680,18 L680,54 L0,54 Z" fill="url(#wg)" opacity="0.85"/>
-      <path d="M0,28 C80,42 160,16 240,28 C320,40 400,18 480,28 C560,38 620,22 680,28 L680,54 L0,54 Z" fill="#0a1e3d" opacity="0.6"/>
-    </svg>
-  </td></tr>
+  <!-- DEEP WATER FOOTER — wave + tagline -->
+  <tr>
+    <td style="padding:0;font-size:0;line-height:0;background:#0a1e3d;">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 30" width="680" height="30" style="display:block;">
+        <defs>
+          <linearGradient id="wgfw" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#00c4cc"/>
+            <stop offset="35%" stop-color="#1a73e8"/>
+            <stop offset="65%" stop-color="#0a1e3d"/>
+            <stop offset="100%" stop-color="#1a73e8"/>
+          </linearGradient>
+        </defs>
+        <path d="M0,10 C60,20 120,4 180,10 C240,16 300,2 360,10 C420,18 480,4 540,10 C600,16 640,8 680,10 L680,30 L0,30 Z" fill="url(#wgfw)" opacity="0.85"/>
+        <path d="M0,16 C80,26 160,8 240,16 C320,24 400,10 480,16 C560,22 620,12 680,16 L680,30 L0,30 Z" fill="#0a1e3d" opacity="0.6"/>
+      </svg>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" style="background:#0a1e3d;padding:8px 20px 11px;">
+      <span style="font-family:Georgia,'Times New Roman',serif;font-size:10.5px;font-style:italic;color:#ffffff;letter-spacing:0.03em;">Cleaning Meets Quality. Redefined by the <b style="font-size:11.5px;font-weight:900;color:#1a73e8;">X</b>PERTS.</span>
+    </td>
+  </tr>
 </table>`;
 }
 
@@ -845,107 +875,128 @@ function tplAqua(d) {
 </table>`;
 }
 
+// ─── Template map ──────────────────────────────────────────────────────────
+
 // ═══════════════════════════════════════════════════════════════════════════
-// TEMPLATE 9 — AQUA SLIM (haron_aqua_slim: aqua palette + slim layout)
+// TEMPLATE 9 — AQUA SLIM (haron_aqua_slim design: logo panel, no photo, light aqua wave)
 // ═══════════════════════════════════════════════════════════════════════════
 function tplAquaSlim(d) {
-  const photo = d.photo || avatar(66);
   return `
-<table cellpadding="0" cellspacing="0" border="0" style="width:680px;border-collapse:collapse;background:#ffffff;font-family:Arial,sans-serif;">
+<table cellpadding="0" cellspacing="0" border="0"
+  style="width:680px;border-collapse:collapse;background:#ffffff;margin:0;
+         mso-table-lspace:0pt;mso-table-rspace:0pt;font-family:Arial,sans-serif;">
+
+  <!-- BEST REGARDS -->
   <tr>
     <td style="padding:18px 0 5px 0;background:#ffffff;">
-      <p style="margin:0 0 3px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-style:italic;color:#0d2a5e;line-height:1;">Best regards,</p>
+      <p style="margin:0 0 3px;font-family:Georgia,'Times New Roman',serif;
+                font-size:26px;font-style:italic;color:#0d2a5e;line-height:1;">Best regards,</p>
       ${brSubline(d,'#1565c0','9.5px')}
     </td>
   </tr>
+
+  <!-- TOP SEPARATOR — water-tone multi-band -->
   <tr>
-    <td style="padding:6px 0 0 0;font-size:0;">
-      <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;width:100%;"><tr>
-        <td width="80"  height="2" style="background:#0d47a1;font-size:0;">&nbsp;</td>
-        <td width="120" height="2" style="background:#1565c0;font-size:0;">&nbsp;</td>
-        <td             height="2" style="background:#29abe2;font-size:0;">&nbsp;</td>
-        <td width="120" height="2" style="background:#1565c0;font-size:0;">&nbsp;</td>
-        <td width="80"  height="2" style="background:#0d47a1;font-size:0;">&nbsp;</td>
-      </tr></table>
-    </td>
-  </tr>
-  <tr>
-    <td style="padding:0;background:#f0f8ff;border-left:3px solid #29abe2;">
-      <table cellpadding="0" cellspacing="0" border="0" style="width:677px;border-collapse:collapse;background:#f0f8ff;">
+    <td style="padding:0;font-size:0;">
+      <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;width:100%;">
         <tr>
-          <!-- Photo -->
-          <td width="82" valign="middle" style="padding:14px 0 14px 16px;vertical-align:middle;">
-            <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr>
-              <td style="padding:2.5px;background:#29abe2;border-radius:50%;">
-                <table cellpadding="0" cellspacing="0" border="0"><tr>
-                  <td style="padding:2px;background:#ffffff;border-radius:50%;">
-                    <img src="${photo}" width="66" height="66" style="display:block;border-radius:50%;width:66px;height:66px;"/>
-                  </td>
-                </tr></table>
-              </td>
-            </tr></table>
-          </td>
-          <!-- Accent bar -->
-          <td width="1" valign="top" style="width:1px;padding:14px 0;">
-            <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;width:1px;">
-              <tr><td height="4" style="background:transparent;font-size:0;">&nbsp;</td></tr>
-              <tr><td height="9" style="background:#29abe2;font-size:0;">&nbsp;</td></tr>
-              <tr><td height="9" style="background:#1565c0;font-size:0;">&nbsp;</td></tr>
-              <tr><td height="9" style="background:#1565c0;font-size:0;">&nbsp;</td></tr>
-              <tr><td height="9" style="background:#0d47a1;font-size:0;">&nbsp;</td></tr>
-              <tr><td height="4" style="background:transparent;font-size:0;">&nbsp;</td></tr>
-            </table>
-          </td>
-          <!-- Name + Social -->
-          <td valign="middle" style="padding:14px 14px;vertical-align:middle;min-width:148px;">
-            <p style="margin:0 0 2px;font-family:Arial,sans-serif;font-size:20px;font-weight:900;color:#0d2a5e;letter-spacing:0.02em;line-height:1;">${d.fn} <span style="color:#1565c0;">${d.ln}</span></p>
-            <p style="margin:0 0 1px;font-family:Arial,sans-serif;font-size:8.5px;font-weight:700;color:#1565c0;letter-spacing:0.15em;text-transform:uppercase;">${d.tt}</p>
-            <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:8px;font-weight:600;color:#5a8cc0;letter-spacing:0.1em;text-transform:uppercase;">${d.co}</p>
-            ${(d.li||d.ig||d.fb) ? `<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr>
-              ${d.li ? `<td style="padding-right:5px;"><a href="${d.li}"><table cellpadding="0" cellspacing="0"><tr><td width="24" height="24" align="center" valign="middle" style="background:#e3f2fd;border:1px solid #90caf9;border-radius:50%;"><img src="${socialSVG('li')}" width="12" height="12" style="display:block;margin:0 auto;"/></td></tr></table></a></td>` : ''}
-              ${d.ig ? `<td style="padding-right:5px;"><a href="${d.ig}"><table cellpadding="0" cellspacing="0"><tr><td width="24" height="24" align="center" valign="middle" style="background:#e3f2fd;border:1px solid #90caf9;border-radius:50%;"><img src="${socialSVG('ig')}" width="12" height="12" style="display:block;margin:0 auto;"/></td></tr></table></a></td>` : ''}
-              ${d.fb ? `<td><a href="${d.fb}"><table cellpadding="0" cellspacing="0"><tr><td width="24" height="24" align="center" valign="middle" style="background:#e3f2fd;border:1px solid#90caf9;border-radius:50%;"><img src="${socialSVG('fb')}" width="12" height="12" style="display:block;margin:0 auto;"/></td></tr></table></a></td>` : ''}
-            </tr></table>` : ''}
-          </td>
-          <!-- Divider -->
-          <td width="1" style="background:#d0e8f8;padding:14px 0;font-size:0;">&nbsp;</td>
-          <!-- Contact -->
-          <td valign="middle" style="padding:14px 14px;vertical-align:middle;">
-            <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
-              ${d.ph ? cRow(ICONS.phone, `<a href="tel:${d.ph}" style="font-family:Arial,sans-serif;font-size:11px;font-weight:600;color:#0d2a5e;text-decoration:none;">${d.ph}</a>`) : ''}
-              ${d.em ? cRow(ICONS.email, `<a href="mailto:${d.em}" style="font-family:Arial,sans-serif;font-size:11px;font-weight:600;color:#1565c0;text-decoration:none;">${d.em}</a>`) : ''}
-              ${d.ad ? cRow(ICONS.pin, `<span style="font-family:Arial,sans-serif;font-size:11px;color:#2a4a6e;">${d.ad}</span>`) : ''}
-              ${d.ws ? cRow(ICONS.globe, `<a href="https://${d.ws}" style="font-family:Arial,sans-serif;font-size:11px;font-weight:600;color:#1565c0;text-decoration:none;">${d.ws}</a>`) : ''}
-            </table>
-          </td>
-          <!-- Divider -->
-          <td width="1" style="background:#d0e8f8;padding:14px 0;font-size:0;">&nbsp;</td>
-          <!-- Logo -->
-          <td style="padding:14px 14px;vertical-align:middle;text-align:center;">
-            <img src="${LOGO_URL}" width="88" height="40" style="display:block;margin:0 auto;width:88px;height:40px;object-fit:contain;"/>
-          </td>
+          <td width="80"  height="2" style="background:#0d47a1;font-size:0;">&nbsp;</td>
+          <td width="120" height="2" style="background:#1565c0;font-size:0;">&nbsp;</td>
+          <td             height="2" style="background:#29abe2;font-size:0;">&nbsp;</td>
+          <td width="120" height="2" style="background:#1565c0;font-size:0;">&nbsp;</td>
+          <td width="80"  height="2" style="background:#0d47a1;font-size:0;">&nbsp;</td>
         </tr>
       </table>
     </td>
   </tr>
-  <tr><td style="padding:0;font-size:0;line-height:0;">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 36" width="680" height="36" style="display:block;">
-      <defs>
-        <linearGradient id="aqs" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#0d47a1"/>
-          <stop offset="35%" stop-color="#1565c0"/>
-          <stop offset="65%" stop-color="#29abe2"/>
-          <stop offset="100%" stop-color="#1565c0"/>
-        </linearGradient>
-      </defs>
-      <path d="M0,12 C60,22 120,6 180,12 C240,18 300,3 360,12 C420,21 480,6 540,12 C600,18 640,9 680,12 L680,36 L0,36 Z" fill="url(#aqs)" opacity="0.85"/>
-      <path d="M0,18 C80,28 160,10 240,18 C320,26 400,12 480,18 C560,24 620,14 680,18 L680,36 L0,36 Z" fill="#0d2a5e" opacity="0.6"/>
-    </svg>
-  </td></tr>
+
+  <!-- MAIN CARD -->
+  <tr>
+    <td style="padding:0;background:#ffffff;border:1px solid #d0e8f8;border-top:none;">
+      <table cellpadding="0" cellspacing="0" border="0" style="width:680px;border-collapse:collapse;background:#ffffff;">
+        <tr valign="middle">
+
+          <!-- LEFT PANEL: logo circle on water bg -->
+          <td width="150" valign="middle"
+            style="padding:16px 14px;background:linear-gradient(180deg,#e3f2fd 0%,#f0f8ff 100%);
+                   vertical-align:middle;text-align:center;border-right:1px solid #29abe2;">
+            <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin:0 auto;">
+              <tr>
+                <td style="padding:3px;background:#29abe2;border-radius:50%;
+                           box-shadow:0 4px 16px rgba(21,101,192,0.3);">
+                  <table cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="padding:2px;background:#ffffff;border-radius:50%;">
+                        <img src="${LOGO_URL}" width="78" height="78"
+                          alt="SaniXperts" style="display:block;border-radius:50%;width:78px;height:78px;object-fit:contain;"/>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+
+          <!-- CENTER: SANIXPERTS wordmark + name + role + social -->
+          <td valign="middle"
+            style="padding:16px 18px;vertical-align:middle;background:#ffffff;border-right:1px solid #d0e8f8;">
+            <!-- SANIXPERTS wordmark -->
+            <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:21px;font-weight:900;
+                      color:#0d2a5e;letter-spacing:1px;line-height:1;">
+              SANI<span style="color:#1565c0;">X</span>PERTS
+            </p>
+            <p style="margin:0 0 2px;font-family:Arial,sans-serif;font-size:14px;font-weight:700;
+                      color:#0d2a5e;letter-spacing:0.02em;line-height:1.2;">${d.fn} ${d.ln}</p>
+            <p style="margin:0 0 12px;font-family:Arial,sans-serif;font-size:9px;font-weight:500;
+                      color:#1565c0;letter-spacing:0.12em;text-transform:uppercase;">${d.tt}</p>
+            ${(d.li||d.ig||d.fb) ? `<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr>
+              ${d.li ? `<td style="padding-right:5px;"><a href="${d.li}"><table cellpadding="0" cellspacing="0"><tr><td width="26" height="26" align="center" valign="middle" style="background:#e3f2fd;border:1px solid #90caf9;border-radius:50%;"><img src="${socialSVG('li')}" width="13" height="13" style="display:block;margin:0 auto;"/></td></tr></table></a></td>` : ''}
+              ${d.ig ? `<td style="padding-right:5px;"><a href="${d.ig}"><table cellpadding="0" cellspacing="0"><tr><td width="26" height="26" align="center" valign="middle" style="background:#e3f2fd;border:1px solid #90caf9;border-radius:50%;"><img src="${socialSVG('ig')}" width="13" height="13" style="display:block;margin:0 auto;"/></td></tr></table></a></td>` : ''}
+              ${d.fb ? `<td><a href="${d.fb}"><table cellpadding="0" cellspacing="0"><tr><td width="26" height="26" align="center" valign="middle" style="background:#e3f2fd;border:1px solid #90caf9;border-radius:50%;"><img src="${socialSVG('fb')}" width="13" height="13" style="display:block;margin:0 auto;"/></td></tr></table></a></td>` : ''}
+            </tr></table>` : ''}
+          </td>
+
+          <!-- RIGHT: contact details -->
+          <td valign="middle" style="padding:16px 20px;vertical-align:middle;background:#ffffff;">
+            <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+              ${d.ph ? cRow(ICONS.phone, `<a href="tel:${d.ph}" style="font-family:Arial,sans-serif;font-size:11.5px;font-weight:600;color:#0d2a5e;text-decoration:none;">${d.ph}</a>`) : ''}
+              ${d.em ? cRow(ICONS.email, `<a href="mailto:${d.em}" style="font-family:Arial,sans-serif;font-size:11.5px;font-weight:600;color:#1565c0;text-decoration:none;">${d.em}</a>`) : ''}
+              ${d.ws ? cRow(ICONS.globe, `<a href="https://${d.ws}" style="font-family:Arial,sans-serif;font-size:11.5px;font-weight:600;color:#1565c0;text-decoration:none;">${d.ws}</a>`) : ''}
+              ${d.ad ? cRow(ICONS.pin, `<span style="font-family:Arial,sans-serif;font-size:11.5px;color:#2a4a6e;">${d.ad}</span>`) : ''}
+            </table>
+          </td>
+
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- AQUA SLIM WAVE FOOTER -->
+  <tr>
+    <td style="padding:0;font-size:0;line-height:0;background:#0d2a5e;">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 30" width="680" height="30" style="display:block;">
+        <defs>
+          <linearGradient id="agsl" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#0d47a1"/>
+            <stop offset="35%" stop-color="#1565c0"/>
+            <stop offset="65%" stop-color="#29abe2"/>
+            <stop offset="100%" stop-color="#1565c0"/>
+          </linearGradient>
+        </defs>
+        <path d="M0,10 C60,20 120,4 180,10 C240,16 300,2 360,10 C420,18 480,4 540,10 C600,16 640,8 680,10 L680,30 L0,30 Z" fill="url(#agsl)" opacity="0.85"/>
+        <path d="M0,16 C80,26 160,8 240,16 C320,24 400,10 480,16 C560,22 620,12 680,16 L680,30 L0,30 Z" fill="#0d2a5e" opacity="0.6"/>
+      </svg>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" style="background:#0d2a5e;padding:8px 20px 11px;">
+      <span style="font-family:Georgia,'Times New Roman',serif;font-size:10.5px;font-style:italic;color:#ffffff;letter-spacing:0.03em;">Cleaning Meets Quality. Redefined by the <b style="font-size:11.5px;font-weight:900;color:#1a73e8;">X</b>PERTS.</span>
+    </td>
+  </tr>
+
 </table>`;
 }
 
-// ─── Template map ──────────────────────────────────────────────────────────
 const TPL = {
   vanguard: tplVanguard,
   lumina:   tplLumina,
@@ -955,7 +1006,7 @@ const TPL = {
   wave:     tplWave,
   meridian: tplMeridian,
   aqua:     tplAqua,
-  aqua_slim: tplAquaSlim,
+  aquaslim: tplAquaSlim,
 };
 
 // ─── Render ────────────────────────────────────────────────────────────────
