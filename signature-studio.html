@@ -337,7 +337,7 @@ function tplVanguard(d) {
     <td width="182" valign="top" style="background:linear-gradient(170deg,#0c2248 0%,#0a1e3d 60%,#081830 100%);padding:20px 16px 20px 18px;vertical-align:top;border-radius:8px 0 0 0;">
       <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;width:100%;text-align:center;">
         <tr><td style="padding-bottom:12px;">
-          <img src="${LOGO_URL}" width="116" height="38" style="display:block;margin:0 auto;width:116px;height:38px;object-fit:contain;"/>
+          <img src="${LOGO_URL}" width="116" height="38" style="display:block;margin:0 auto;width:116px;height:38px;object-fit:contain;mix-blend-mode:screen;"/>
         </td></tr>
         <tr><td style="padding-bottom:14px;"><table cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tr><td style="height:1px;background:linear-gradient(90deg,transparent,#00c4cc80,#00c4cc,#00c4cc80,transparent);font-size:0;">&nbsp;</td></tr></table></td></tr>
         <tr><td style="padding-bottom:10px;">
@@ -359,12 +359,28 @@ function tplVanguard(d) {
     <td width="3" style="background:linear-gradient(180deg,#1a73e8 0%,#00c4cc 50%,#1a73e8 100%);width:3px;padding:0;font-size:0;">&nbsp;</td>
     <td valign="top" style="background:#ffffff;padding:22px 26px 0 24px;vertical-align:top;">
       <p style="margin:0 0 3px;font-family:Georgia,'Times New Roman',serif;font-size:21px;font-style:italic;color:#0a1e3d;line-height:1;">Best regards,</p>
-      <p style="margin:0 0 18px;font-family:Arial,sans-serif;font-size:8.5px;font-weight:700;color:#1a73e8;letter-spacing:0.2em;text-transform:uppercase;">${d.fn} ${d.ln}&nbsp;&nbsp;·&nbsp;&nbsp;${d.tt}</p>
+      <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:8.5px;font-weight:700;color:#1a73e8;letter-spacing:0.2em;text-transform:uppercase;">${d.fn} ${d.ln}&nbsp;&nbsp;·&nbsp;&nbsp;${d.tt}</p>
+      <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;width:100%;margin:0 0 14px;">
+        <tr>
+          <td width="6%" style="height:2px;background:#f0f6ff;font-size:0;line-height:0;">&nbsp;</td>
+          <td width="14%" style="height:2px;background:#c8dcf4;font-size:0;line-height:0;">&nbsp;</td>
+          <td style="height:2px;background:#1a73e8;font-size:0;line-height:0;">&nbsp;</td>
+          <td width="12%" style="height:2px;background:#00c4cc;font-size:0;line-height:0;">&nbsp;</td>
+          <td style="height:2px;background:#1a73e8;font-size:0;line-height:0;">&nbsp;</td>
+          <td width="14%" style="height:2px;background:#c8dcf4;font-size:0;line-height:0;">&nbsp;</td>
+          <td width="6%" style="height:2px;background:#f0f6ff;font-size:0;line-height:0;">&nbsp;</td>
+        </tr>
+      </table>
       <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
         ${d.ph ? cRow(ICONS.phone, `<a href="tel:${d.ph}" style="font-family:Arial,sans-serif;font-size:12px;font-weight:600;color:#0a1e3d;text-decoration:none;">${d.ph}</a>`) : ''}
         ${d.em ? cRow(ICONS.email, `<a href="mailto:${d.em}" style="font-family:Arial,sans-serif;font-size:12px;font-weight:600;color:#1a73e8;text-decoration:none;">${d.em}</a>`) : ''}
         ${d.ad ? cRow(ICONS.pin, `<span style="font-family:Arial,sans-serif;font-size:12px;color:#3a5070;">${d.ad}</span>`) : ''}
         ${d.ws ? cRow(ICONS.globe, `<a href="https://${d.ws}" style="font-family:Arial,sans-serif;font-size:12px;font-weight:600;color:#1a73e8;text-decoration:none;">${d.ws}</a>`) : ''}
+      </table>
+      <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;width:100%;margin:10px 0 0;">
+        <tr><td style="border-top:1px solid #dce8f5;padding:8px 0 0;">
+          <p style="margin:0;font-family:Arial,sans-serif;font-size:7px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;line-height:1.7;"><span style="color:#1a73e8;">&#9670;&nbsp;HACCP AUDIT READY</span>&nbsp;&nbsp;<span style="color:#c0d0e0;">&#183;</span>&nbsp;&nbsp;<span style="color:#00c4cc;">INDUSTRIAL SANITATION</span>&nbsp;&nbsp;<span style="color:#c0d0e0;">&#183;</span>&nbsp;&nbsp;<span style="color:#1a73e8;">CERTIFIED CLEANING EXCELLENCE</span></p>
+        </td></tr>
       </table>
     </td>
   </tr>
