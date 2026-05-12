@@ -847,11 +847,44 @@
   <!-- ─── Templates Section ────────────────────────────────────────────────── -->
   <div class="section-heading">
     <h2>Templates</h2>
-    <span class="count-pill">5 designs</span>
+    <span class="count-pill">6 designs</span>
     <div class="section-divider"></div>
   </div>
 
   <div class="templates-grid">
+
+    <!-- ── Card: Hybrid ─────────────────────────────────────────────────────── -->
+    <div class="template-card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Hybrid</div>
+          <div class="card-meta">
+            <span class="card-width">680 px wide</span>
+          </div>
+        </div>
+        <span class="badge badge-recommended">★ New &amp; Recommended</span>
+      </div>
+      <div class="preview-area">
+        <span class="preview-label">Preview</span>
+        <div class="iframe-wrapper preview-560">
+          <iframe
+            id="iframe-hybrid"
+            class="preview-iframe"
+            src="haron_hybrid.html"
+            title="Hybrid signature preview"
+            scrolling="no"
+          ></iframe>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-web" onclick="copyForWeb('iframe-hybrid')">
+          <span class="btn-icon">🖥️</span> Copy for Outlook Web / Desktop
+        </button>
+        <button class="btn btn-mobile" onclick="copyForMobile()">
+          <span class="btn-icon">📱</span> Mobile
+        </button>
+      </div>
+    </div>
 
     <!-- ── Card 1: Wave ─────────────────────────────────────────────────────── -->
     <div class="template-card">
@@ -1116,15 +1149,27 @@ Cleaning Meets Quality. Redefined by the XPERTS.`;
 
     let html = '';
     try {
-      html = iframe.contentDocument.body.innerHTML;
+      if (iframe.contentDocument && iframe.contentDocument.body) {
+        html = iframe.contentDocument.body.innerHTML;
+      } else {
+        throw new Error("No contentDocument");
+      }
     } catch(e) {
-      // cross-origin fallback not possible — show guidance
-      showToast(
-        'Cannot access signature',
-        'Open this page directly in Chrome/Edge via file:// — do not use a web server.',
-        'web'
-      );
-      return;
+      try {
+        const res = await fetch(iframe.src);
+        if (!res.ok) throw new Error("Network response was not ok");
+        const text = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+        html = doc.body.innerHTML;
+      } catch(err) {
+        showToast(
+          'Cannot access signature',
+          'Security restriction: Please open this page via a local web server (e.g., VS Code Live Server) to copy signatures.',
+          'web'
+        );
+        return;
+      }
     }
 
     // Primary: ClipboardItem API (Chrome 76+, Edge 79+)
