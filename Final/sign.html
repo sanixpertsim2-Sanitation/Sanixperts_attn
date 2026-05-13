@@ -17,19 +17,22 @@
   
   /* DARK MODE OVERRIDES */
   @media (prefers-color-scheme: dark) {
-    .dark-bg { background-color: #1a1a1a !important; }
-    .dark-text { color: #ffffff !important; }
-    .name-text { color: #14b7ff !important; }
-    .role-text { color: #8bb3ff !important; }
-    .border-fix { border-color: #444444 !important; }
-    .divider-fix { border-left-color: #444444 !important; }
+    .dark-bg { background-color: #ffffff !important; }
+    .watermark { display: none !important; }
+    /* Ensure text remains legible on the forced white background */
+    .dark-text { color: #0d1f3c !important; }
+    .name-text { color: #08145f !important; }
+    .role-text { color: #1d65ff !important; }
+    .border-fix { border-color: #d6dbe8 !important; }
+    .divider-fix { border-left-color: #1478ff !important; }
   }
 
   /* Outlook.com / Web Dark Mode */
-  [data-ogsc] .dark-bg { background-color: #1a1a1a !important; }
-  [data-ogsc] .dark-text { color: #ffffff !important; }
-  [data-ogsc] .name-text { color: #14b7ff !important; }
-  [data-ogsc] .border-fix { border-color: #444444 !important; }
+  [data-ogsc] .dark-bg { background-color: #ffffff !important; }
+  [data-ogsc] .watermark { display: none !important; }
+  [data-ogsc] .dark-text { color: #0d1f3c !important; }
+  [data-ogsc] .name-text { color: #08145f !important; }
+  [data-ogsc] .border-fix { border-color: #d6dbe8 !important; }
 </style>
 </head>
 
@@ -117,8 +120,13 @@
                   >
                 </td>
 
-                <!-- COLUMN 3: CONTACT & LOGO -->
-                <td valign="middle" class="divider-fix" style="padding:20px; border-left:1px solid #d6dbe8; width:330px;">
+                <!-- COLUMN 3: CONTACT & LOGO (Watermark Background) -->
+                <td valign="middle" class="divider-fix" background="https://res.cloudinary.com/dydim1luz/image/upload/o_12,w_350/v1778591026/copy_of_logo_fnu8jh_a8d271.png" style="padding:20px; border-left:1px solid #d6dbe8; width:330px; background-image: url('https://res.cloudinary.com/dydim1luz/image/upload/o_12,w_350/v1778591026/copy_of_logo_fnu8jh_a8d271.png'); background-repeat: no-repeat; background-position: right 15px center; background-size: 240px;">
+                  <!--[if gte mso 9]>
+                  <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:330px;height:180px;">
+                    <v:fill type="frame" src="https://res.cloudinary.com/dydim1luz/image/upload/o_12,w_350/v1778591026/copy_of_logo_fnu8jh_a8d271.png" color="#f5f7fc" />
+                    <v:textbox inset="0,0,0,0">
+                  <![endif]-->
                   <table cellpadding="0" cellspacing="0" border="0" width="100%" class="dark-bg" style="border-collapse:collapse;">
                     <tr>
                       <td valign="top">
@@ -155,7 +163,7 @@
                             <td width="24" style="padding-bottom:8px;vertical-align:middle;">
                               <img src="https://img.icons8.com/ios-filled/50/1a73e8/domain.png" width="14" height="14" style="display:block;">
                             </td>
-                            <td style="padding-bottom:8px;padding-left:8px;vertical-align:middle;">
+                            <td style="padding-left:8px;vertical-align:middle;">
                               <a href="https://www.SaniXperts.ca" class="dark-text" style="font-family:Arial,sans-serif;font-size:12px;font-weight:600;color:#1a73e8;text-decoration:none;white-space:nowrap;">www.SaniXperts.ca</a>
                             </td>
                           </tr>
@@ -170,17 +178,12 @@
                           </tr>
                         </table>
                       </td>
-                      <!-- LOGO WATERMARK -->
-                      <td valign="middle" align="right" style="padding-left:10px;">
-                        <img
-                          src="https://res.cloudinary.com/dydim1luz/image/upload/o_15/v1778591026/copy_of_logo_fnu8jh_a8d271.png"
-                          width="100"
-                          height="100"
-                          style="display:block;width:100px;height:100px;border:0;"
-                        >
-                      </td>
                     </tr>
                   </table>
+                  <!--[if gte mso 9]>
+                    </v:textbox>
+                  </v:rect>
+                  <![endif]-->
                 </td>
               </tr>
             </table>
